@@ -1,40 +1,80 @@
-import { Form, ActionPanel, Action, showToast } from "@raycast/api";
+import { Action, ActionPanel, List, showToast, Toast } from "@raycast/api";
+import { useEffect, useState } from "react";
+import fetch from "node-fetch"; // For older Node versions; if you have Node 18+ you can omit.
 
-type Values = {
-  textfield: string;
-  textarea: string;
-  datepicker: Date;
-  checkbox: boolean;
-  dropdown: string;
-  tokeneditor: string[];
-};
+interface EnheterResponse {
+  _embedded?: {
+    enheter?: Enhet[];
+  };
+  // ... other fields if needed
+}
 
-export default function Command() {
-  function handleSubmit(values: Values) {
-    console.log(values);
-    showToast({ title: "Submitted form", message: "See logs for submitted values" });
-  }
+interface Enhet {
+  organisasjonsnummer: string;
+  navn: string;
+  // ... other fields if needed
+}
+
+export default function SearchAndCopyCommand() {
+  const [searchText, setSearchText] = useState("");
+  const [enheter, setEnheter] = useState<Enhet[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!searchText.trim()) {
+      setEnheter([]);
+      return;
+    }
+
+    async function fetchEnheter() {
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          `https://data.brreg.no/enhetsregisteret/api/enheter?navn=${encodeURIComponent(searchText)}`
+        );
+        if (!response.ok) {
+          throw new Error(`API responded with status ${response.status}`);
+        }
+        const data: EnheterResponse = await response.json();
+        const fetchedEnheter = data._embedded?.enheter || [];
+        setEnheter(fetchedEnheter);
+      } catch (error: any) {
+        showToast(Toast.Style.Failure, "Failed to fetch enheter", error?.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchEnheter();
+  }, [searchText]);
 
   return (
-    <Form
-      actions={
-        <ActionPanel>
-          <Action.SubmitForm onSubmit={handleSubmit} />
-        </ActionPanel>
-      }
+    <List
+      isLoading={isLoading}
+      onSearchTextChange={setSearchText}
+      throttle
+      searchBarPlaceholder="Search Enhetsregisteret by navn..."
     >
-      <Form.Description text="This form showcases all available form elements." />
-      <Form.TextField id="textfield" title="Text field" placeholder="Enter text" defaultValue="Raycast" />
-      <Form.TextArea id="textarea" title="Text area" placeholder="Enter multi-line text" />
-      <Form.Separator />
-      <Form.DatePicker id="datepicker" title="Date picker" />
-      <Form.Checkbox id="checkbox" title="Checkbox" label="Checkbox Label" storeValue />
-      <Form.Dropdown id="dropdown" title="Dropdown">
-        <Form.Dropdown.Item value="dropdown-item" title="Dropdown Item" />
-      </Form.Dropdown>
-      <Form.TagPicker id="tokeneditor" title="Tag picker">
-        <Form.TagPicker.Item value="tagpicker-item" title="Tag Picker Item" />
-      </Form.TagPicker>
-    </Form>
+      {enheter.map((enhet) => (
+        <List.Item
+          key={enhet.organisasjonsnummer}
+          title={enhet.navn}
+          subtitle={enhet.organisasjonsnummer}
+          actions={
+            <ActionPanel>
+              <Action.CopyToClipboard
+                content={enhet.organisasjonsnummer}
+                title="Copy Organisasjonsnummer"
+              />
+              <Action.OpenInBrowser
+                title="Open in Brønnøysundregistrene"
+                url={`https://virksomhet.brreg.no/nb/oppslag/enheter/${enhet.organisasjonsnummer}`}
+              />
+            </ActionPanel>
+          
+          }
+        />
+      ))}
+    </List>
   );
 }

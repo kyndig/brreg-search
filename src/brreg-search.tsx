@@ -54,10 +54,10 @@ export default function SearchAndCopyCommand() {
         if (!response.ok) {
           throw new Error(`API responded with status ${response.status}`);
         }
-        const data: EnheterResponse = await response.json();
+        const data = (await response.json() as EnheterResponse)
         setEnheter(data._embedded?.enheter || []);
-      } catch (error: any) {
-        showToast(Toast.Style.Failure, "Failed to fetch enheter", error?.message);
+      } catch (error) {
+        showToast(Toast.Style.Failure, "Failed to fetch enheter", (error as {message?: string})?.message);
       } finally {
         setIsLoading(false);
       }
@@ -85,7 +85,7 @@ export default function SearchAndCopyCommand() {
               <ActionPanel>
                 <Action.CopyToClipboard
                   content={enhet.organisasjonsnummer}
-                  title="Copy Organisasjonsnummer"
+                  title="Copy Org.nr."
                 />
                 {addressString && (
                   <Action.CopyToClipboard

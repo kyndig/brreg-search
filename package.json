@@ -1,11 +1,11 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "br",
-  "title": "br",
-  "description": "",
-  "icon": "extension-icon.png",
+  "name": "brreg",
+  "title": "Norwegian Unit Registry Search",
+  "description": "Extension using the API of the Unit Registry in Norway to return info about registered companies",
+  "icon": "icon.png",
   "author": "dsorenes",
-  "owner": "kyndig",
+  "owner": "kynd",
   "categories": [
     "Applications"
   ],
@@ -13,8 +13,8 @@
   "commands": [
     {
       "name": "brreg-search",
-      "title": "brreg search",
-      "description": "",
+      "title": "Search BRREG",
+      "description": "Input org. name",
       "mode": "view"
     }
   ],

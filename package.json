@@ -2,7 +2,7 @@
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "brreg",
   "title": "Norwegian Unit Registry Search",
-  "description": "Extension using the API of the Unit Registry in Norway to return info about registered companies",
+  "description": "Search and retrieve information about Norwegian companies (Enhetsregisteret)",
   "icon": "icon.png",
   "author": "dsorenes",
   "owner": "kynd",

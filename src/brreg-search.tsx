@@ -34,22 +34,33 @@ function formatAddress(addr?: Enhet["forretningsadresse"]): string {
   return [street, post, country].filter(Boolean).join(", ");
 }
 
+// Helper function to detect numeric vs text input
+function isAllDigits(str: string) {
+  return /^\d+$/.test(str);
+}
+
 export default function SearchAndCopyCommand() {
   const [searchText, setSearchText] = useState("");
   const [enheter, setEnheter] = useState<Enhet[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    // If empty, clear results
     if (!searchText.trim()) {
       setEnheter([]);
       return;
     }
 
+    // If user typed only digits, use ?organisasjonsnummer=, else ?navn=
+    const isNumeric = isAllDigits(searchText.trim());
+    // Org. No.'s are exactly 9 digits in Norway,
+    const paramName = isNumeric ? "organisasjonsnummer" : "navn";
+
     async function fetchEnheter() {
       setIsLoading(true);
       try {
         const response = await fetch(
-          `https://data.brreg.no/enhetsregisteret/api/enheter?navn=${encodeURIComponent(searchText)}`
+          `https://data.brreg.no/enhetsregisteret/api/enheter?${paramName}=${encodeURIComponent(searchText)}`
         );
         if (!response.ok) {
           throw new Error(`API responded with status ${response.status}`);
@@ -71,7 +82,7 @@ export default function SearchAndCopyCommand() {
       isLoading={isLoading}
       onSearchTextChange={setSearchText}
       throttle
-      searchBarPlaceholder="Search Enhetsregisteret by navn..."
+      searchBarPlaceholder="Search for name or organisation number"
     >
       {enheter.map((enhet) => {
         const addressString = formatAddress(enhet.forretningsadresse);

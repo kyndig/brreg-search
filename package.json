@@ -4,7 +4,7 @@
   "title": "Norwegian Unit Registry Search",
   "description": "Search and retrieve information about Norwegian companies (Enhetsregisteret)",
   "icon": "icon.png",
-  "author": "dsorenes",
+  "author": "kakaoduft",
   "owner": "kynd",
   "categories": [
     "Productivity",
@@ -14,7 +14,7 @@
   "commands": [
     {
       "name": "brreg-search",
-      "title": "Search BRREG",
+      "title": "Brreg Search",
       "description": "Input org. name",
       "mode": "view"
     }

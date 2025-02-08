@@ -20,3 +20,5 @@ Search and retrieve information about Norwegian companies (Enhetsregisteret) dir
 - The extension sends your search query (name or number) to the public Brreg API to retrieve matching entities.
 - All information collected from the user is used solely to connect to Brreg and improve the extension’s response.
 - We do not store, share, or process personal data outside of fulfilling these requests.
+
+Made with 🫶 by [kynd](https://kynd.no)

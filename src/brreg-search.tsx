@@ -60,15 +60,15 @@ export default function SearchAndCopyCommand() {
       setIsLoading(true);
       try {
         const response = await fetch(
-          `https://data.brreg.no/enhetsregisteret/api/enheter?${paramName}=${encodeURIComponent(searchText)}`
+          `https://data.brreg.no/enhetsregisteret/api/enheter?${paramName}=${encodeURIComponent(searchText)}`,
         );
         if (!response.ok) {
           throw new Error(`API responded with status ${response.status}`);
         }
-        const data = (await response.json() as EnheterResponse)
+        const data = (await response.json()) as EnheterResponse;
         setEnheter(data._embedded?.enheter || []);
       } catch (error) {
-        showToast(Toast.Style.Failure, "Failed to fetch enheter", (error as {message?: string})?.message);
+        showToast(Toast.Style.Failure, "Failed to fetch enheter", (error as { message?: string })?.message);
       } finally {
         setIsLoading(false);
       }
@@ -94,17 +94,10 @@ export default function SearchAndCopyCommand() {
             accessories={addressString ? [{ text: addressString }] : []}
             actions={
               <ActionPanel>
-                <Action.CopyToClipboard
-                  content={enhet.organisasjonsnummer}
-                  title="Copy Org.nr."
-                />
-                {addressString && (
-                  <Action.CopyToClipboard
-                    content={addressString}
-                    title="Copy Forretningsadresse"
-                  />
-                )}
-                <Action.OpenInBrowser shortcut={{ modifiers: ["cmd", "shift"], key: "enter" }}
+                <Action.CopyToClipboard content={enhet.organisasjonsnummer} title="Copy Org.nr." />
+                {addressString && <Action.CopyToClipboard content={addressString} title="Copy Forretningsadresse" />}
+                <Action.OpenInBrowser
+                  shortcut={{ modifiers: ["cmd", "shift"], key: "enter" }}
                   title="Open in Brønnøysundregistrene"
                   url={`https://virksomhet.brreg.no/nb/oppslag/enheter/${enhet.organisasjonsnummer}`}
                 />

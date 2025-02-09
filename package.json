@@ -6,6 +6,10 @@
   "icon": "icon.png",
   "author": "kakaoduft",
   "owner": "kynd",
+  "access": "public",
+  "contributors": [
+    "daniel_sorenes"
+  ],
   "categories": [
     "Productivity",
     "Web"

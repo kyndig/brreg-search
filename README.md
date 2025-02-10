@@ -2,6 +2,8 @@
 
 Search and retrieve information about Norwegian companies (Enhetsregisteret) directly from the Raycast command bar. The extension uses the official [Brønnøysund Register Center (Brreg)](https://www.brreg.no) API to find companies by name or organisation number.
 
+![Extension screenshot](metadata/brreg-2.png)
+
 ## Features
 
 - **Search by Name**: Type any part of a company’s name to view matching results from Brreg.

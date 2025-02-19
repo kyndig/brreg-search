@@ -94,8 +94,8 @@ export default function SearchAndCopyCommand() {
             accessories={addressString ? [{ text: addressString }] : []}
             actions={
               <ActionPanel>
-                <Action.CopyToClipboard content={enhet.organisasjonsnummer} title="Copy Org.nr." />
-                {addressString && <Action.CopyToClipboard content={addressString} title="Copy Forretningsadresse" />}
+                <Action.CopyToClipboard content={enhet.organisasjonsnummer} title="Copy Org. nr." />
+                {addressString && <Action.CopyToClipboard content={addressString} title="Copy Business Address" />}
                 <Action.OpenInBrowser
                   shortcut={{ modifiers: ["cmd", "shift"], key: "enter" }}
                   title="Open in Brønnøysundregistrene"

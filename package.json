@@ -4,9 +4,7 @@
   "title": "Norwegian Unit Registry Search",
   "description": "Search and retrieve information about Norwegian companies (Enhetsregisteret)",
   "icon": "icon.png",
-  // "author": "kakaoduft",
-  // "owner": "kynd",
-	"owner": "kakaoduft",
+  "author": "kakaoduft",
   "access": "public",
   "contributors": [
     "daniel_sorenes"

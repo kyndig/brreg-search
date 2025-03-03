@@ -63,13 +63,9 @@ export default function SearchAndCopyCommand() {
 
 		// Decide which parameter to use for the API call. Norwegian words for the API call
 		const paramName = isNumeric ? "organisasjonsnummer" : "navn";
-		// console.debug(paramName);
 
     async function fetchEntities() {
       setIsLoading(true);
-			console.debug(paramName);
-			console.debug(encodeURIComponent(trimmed));
-			console.debug(`https://data.brreg.no/enhetsregisteret/api/enheter?${paramName}=${encodeURIComponent(trimmed)}`);
       try {
         const response = await fetch(
           `https://data.brreg.no/enhetsregisteret/api/enheter?${paramName}=${encodeURIComponent(trimmed)}`,

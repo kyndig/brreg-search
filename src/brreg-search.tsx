@@ -44,17 +44,16 @@ export default function SearchAndCopyCommand() {
   const [entities, setEntities] = useState<Enhet[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+	const trimmed = searchText.trim();
+  const isNumeric = isAllDigits(trimmed);
+
   useEffect(() => {
-		const trimmed = searchText.trim();
 
     // If empty, clear results
     if (!trimmed) {
       setEntities([]);
       return;
     }
-
-    // If user typed only digits, use ?organisationnumber=, else ?name=
-    const isNumeric = isAllDigits(trimmed);
 
     // Org. No.'s are exactly 9 digits in Norway, avoid calling the API with less
 		if (isNumeric && trimmed.length < 9) {
@@ -97,28 +96,35 @@ export default function SearchAndCopyCommand() {
       throttle
       searchBarPlaceholder="Search for name or organisation number"
     >
-      {entities.map((entity) => {
-        const addressString = formatAddress(entity.forretningsadresse);
-        return (
-          <List.Item
-            key={entity.organisasjonsnummer}
-            title={entity.navn}
-            subtitle={entity.organisasjonsnummer}
-            accessories={addressString ? [{ text: addressString }] : []}
-            actions={
-              <ActionPanel>
-                <Action.CopyToClipboard content={entity.organisasjonsnummer} title="Copy Org. Nr." />
-                {addressString && <Action.CopyToClipboard content={addressString} title="Copy Business Address" />}
-                <Action.OpenInBrowser
-                  shortcut={{ modifiers: ["cmd", "shift"], key: "enter" }}
-                  title="Open in Brønnøysundregistrene"
-                  url={`https://virksomhet.brreg.no/nb/oppslag/enheter/${entity.organisasjonsnummer}`}
-                />
-              </ActionPanel>
-            }
-          />
-        );
-      })}
+			{entities.length === 0 && isNumeric && trimmed.length > 0 && trimmed.length < 9 ? (
+				<List.EmptyView
+					title="Waiting for 9 digits"
+					description="Norwegian organisation numbers are 9 digits long. Keep typing…"
+				/>
+				) : (
+				entities.map((entity) => {
+					const addressString = formatAddress(entity.forretningsadresse);
+					return (
+						<List.Item
+							key={entity.organisasjonsnummer}
+							title={entity.navn}
+							subtitle={entity.organisasjonsnummer}
+							accessories={addressString ? [{ text: addressString }] : []}
+							actions={
+								<ActionPanel>
+									<Action.CopyToClipboard content={entity.organisasjonsnummer} title="Copy Org. Nr." />
+									{addressString && <Action.CopyToClipboard content={addressString} title="Copy Business Address" />}
+									<Action.OpenInBrowser
+										shortcut={{ modifiers: ["cmd", "shift"], key: "enter" }}
+										title="Open in Brønnøysundregistrene"
+										url={`https://virksomhet.brreg.no/nb/oppslag/enheter/${entity.organisasjonsnummer}`}
+									/>
+								</ActionPanel>
+							}
+						/>
+					);
+				})
+			)}
     </List>
-  );
+	);
 }

@@ -6,11 +6,11 @@ Search and retrieve information about Norwegian companies (Enhetsregisteret) dir
 
 ## Features
 
-- **Search by Name**: Type any part of a company’s name to view matching results from Brreg.
+- **Search by Name**: Type any part of a company's name to view matching results from Brreg.
 - **Search by Organisasjonsnummer**: Type a 9-digit organisation number to retrieve an exact match.
 - **Partial Numeric Search**: If you type fewer than 9 digits, the extension can optionally use Brreg's full-text search (`q` param) to show partial matches.
 - **Copy Data**: Copy the organisation number or address with a single action.
-- **Open in Browser**: Quickly jump to the company’s details page in the Brønnøysund Register website.
+- **Open in Browser**: Quickly jump to the company's details page in the Brønnøysund Register website.
 
 ## Requirements
 

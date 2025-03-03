@@ -53,8 +53,8 @@ export default function SearchAndCopyCommand() {
 
     // If user typed only digits, use ?organisasjonsnummer=, else ?navn=
     const isNumeric = isAllDigits(searchText.trim());
-    // Org. No.'s are exactly 9 digits in Norway,
-    const paramName = isNumeric ? "organisasjonsnummer" : "navn";
+    // Org. No.'s are exactly 9 digits in Norway
+    const paramName = isNumeric && searchText.trim().length === 9 ? "organisasjonsnummer" : "navn";
 
     async function fetchEnheter() {
       setIsLoading(true);
@@ -94,8 +94,8 @@ export default function SearchAndCopyCommand() {
             accessories={addressString ? [{ text: addressString }] : []}
             actions={
               <ActionPanel>
-                <Action.CopyToClipboard content={enhet.organisasjonsnummer} title="Copy Org. Nr." />
-                {addressString && <Action.CopyToClipboard content={addressString} title="Copy Business Address" />}
+                <Action.CopyToClipboard content={enhet.organisasjonsnummer} title="Copy Org.nr." />
+                {addressString && <Action.CopyToClipboard content={addressString} title="Copy Forretningsadresse" />}
                 <Action.OpenInBrowser
                   shortcut={{ modifiers: ["cmd", "shift"], key: "enter" }}
                   title="Open in Brønnøysundregistrene"

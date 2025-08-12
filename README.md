@@ -11,6 +11,13 @@ Search and retrieve information about Norwegian companies (Enhetsregisteret) dir
 - **Partial Numeric Search**: If you type fewer than 9 digits, the extension can optionally use Brreg's full-text search (`q` param) to show partial matches.
 - **Copy Data**: Copy the organisation number or address with a single action.
 - **Open in Browser**: Quickly jump to the company's details page in the Brønnøysund Register website.
+- **Favorites**: Save companies to a favorites list that appears above your search results. Revisit them instantly, copy details, or open them in the browser. Favorites are stored locally and persist across sessions.
+
+## Favorites
+
+- Add a favorite: Select a company in the results and choose "Add to Favorites" from the action panel.
+- Remove a favorite: Select it from the Favorites section and choose "Remove from Favorites" (shortcut: `⌘⌫`).
+- Favorites appear in a dedicated section above the search results and are stored locally on your device.
 
 ## Requirements
 

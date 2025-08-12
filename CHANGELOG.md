@@ -2,11 +2,11 @@
 
 ## Version 1.1. - {PR_MERGE_DATE}
 
-Changes
+♻️ What's changed:
 
 - Corrected the English name of Brønnøysundregistrene to the official translation (The Brønnøysund Register Centre).
 
-⭐ New:
+⭐ What's new?
 
 - Favorite entities to keep your most-used companies and organisations at your fingertips.
 

@@ -1,5 +1,6 @@
 import { Action, ActionPanel, List, showToast, Toast } from "@raycast/api";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocalStorage } from "@raycast/utils";
 import fetch from "node-fetch"; // If your Node version < 18
 
 interface EnheterResponse {
@@ -44,6 +45,12 @@ export default function SearchAndCopyCommand() {
   const [entities, setEntities] = useState<Enhet[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const {
+    value: favorites,
+    setValue: setFavorites,
+    isLoading: isLoadingFavorites,
+  } = useLocalStorage<Enhet[]>("favorites", []);
+
   const trimmed = searchText.trim();
   const isNumeric = isAllDigits(trimmed);
 
@@ -84,41 +91,103 @@ export default function SearchAndCopyCommand() {
     fetchEntities();
   }, [searchText]);
 
+  const favoritesList = favorites ?? [];
+
+  const favoriteIds = useMemo(() => new Set(favoritesList.map((f) => f.organisasjonsnummer)), [favoritesList]);
+
+  function addFavorite(entity: Enhet) {
+    if (favoriteIds.has(entity.organisasjonsnummer)) {
+      return;
+    }
+    const next = [entity, ...favoritesList];
+    setFavorites(next);
+    showToast(Toast.Style.Success, "Added to Favorites", entity.navn);
+  }
+
+  function removeFavorite(entity: Enhet) {
+    if (!favoriteIds.has(entity.organisasjonsnummer)) {
+      return;
+    }
+    const next = favoritesList.filter((f) => f.organisasjonsnummer !== entity.organisasjonsnummer);
+    setFavorites(next);
+    showToast(Toast.Style.Success, "Removed from Favorites", entity.navn);
+  }
+
   return (
     <List
-      isLoading={isLoading}
+      isLoading={isLoading || isLoadingFavorites}
       onSearchTextChange={setSearchText}
       throttle
       searchBarPlaceholder="Search for name or organisation number"
     >
+      {favoritesList.length > 0 && (
+        <List.Section title="Favorites">
+          {favoritesList.map((entity) => {
+            const addressString = formatAddress(entity.forretningsadresse);
+            return (
+              <List.Item
+                key={`fav-${entity.organisasjonsnummer}`}
+                title={entity.navn}
+                subtitle={entity.organisasjonsnummer}
+                accessories={addressString ? [{ text: addressString }] : []}
+                actions={
+                  <ActionPanel>
+                    <Action.CopyToClipboard content={entity.organisasjonsnummer} title="Copy Org. Nr." />
+                    {addressString && <Action.CopyToClipboard content={addressString} title="Copy Business Address" />}
+                    <Action.OpenInBrowser
+                      shortcut={{ modifiers: ["cmd", "shift"], key: "enter" }}
+                      title="Open in Brønnøysundregistrene"
+                      url={`https://virksomhet.brreg.no/nb/oppslag/enheter/${entity.organisasjonsnummer}`}
+                    />
+                    <Action
+                      title="Remove from Favorites"
+                      onAction={() => removeFavorite(entity)}
+                      shortcut={{ modifiers: ["cmd"], key: "backspace" }}
+                    />
+                  </ActionPanel>
+                }
+              />
+            );
+          })}
+        </List.Section>
+      )}
+
       {entities.length === 0 && isNumeric && trimmed.length > 0 && trimmed.length < 9 ? (
         <List.EmptyView
           title="Waiting for 9 digits"
           description="Norwegian organisation numbers are 9 digits long. Keep typing…"
         />
       ) : (
-        entities.map((entity) => {
-          const addressString = formatAddress(entity.forretningsadresse);
-          return (
-            <List.Item
-              key={entity.organisasjonsnummer}
-              title={entity.navn}
-              subtitle={entity.organisasjonsnummer}
-              accessories={addressString ? [{ text: addressString }] : []}
-              actions={
-                <ActionPanel>
-                  <Action.CopyToClipboard content={entity.organisasjonsnummer} title="Copy Org. Nr." />
-                  {addressString && <Action.CopyToClipboard content={addressString} title="Copy Business Address" />}
-                  <Action.OpenInBrowser
-                    shortcut={{ modifiers: ["cmd", "shift"], key: "enter" }}
-                    title="Open in Brønnøysundregistrene"
-                    url={`https://virksomhet.brreg.no/nb/oppslag/enheter/${entity.organisasjonsnummer}`}
-                  />
-                </ActionPanel>
-              }
-            />
-          );
-        })
+        <List.Section title="Results">
+          {entities.map((entity) => {
+            const addressString = formatAddress(entity.forretningsadresse);
+            const alreadyFavorite = favoriteIds.has(entity.organisasjonsnummer);
+            return (
+              <List.Item
+                key={entity.organisasjonsnummer}
+                title={entity.navn}
+                subtitle={entity.organisasjonsnummer}
+                accessories={addressString ? [{ text: addressString }] : []}
+                actions={
+                  <ActionPanel>
+                    <Action.CopyToClipboard content={entity.organisasjonsnummer} title="Copy Org. Nr." />
+                    {addressString && <Action.CopyToClipboard content={addressString} title="Copy Business Address" />}
+                    <Action.OpenInBrowser
+                      shortcut={{ modifiers: ["cmd", "shift"], key: "enter" }}
+                      title="Open in Brønnøysundregistrene"
+                      url={`https://virksomhet.brreg.no/nb/oppslag/enheter/${entity.organisasjonsnummer}`}
+                    />
+                    {alreadyFavorite ? (
+                      <Action title="Remove from Favorites" onAction={() => removeFavorite(entity)} />
+                    ) : (
+                      <Action title="Add to Favorites" onAction={() => addFavorite(entity)} />
+                    )}
+                  </ActionPanel>
+                }
+              />
+            );
+          })}
+        </List.Section>
       )}
     </List>
   );

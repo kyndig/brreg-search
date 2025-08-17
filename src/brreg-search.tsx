@@ -1,116 +1,62 @@
-import { Action, ActionPanel, List, showToast, Toast } from "@raycast/api";
-import { useEffect, useMemo, useState } from "react";
-import { useLocalStorage } from "@raycast/utils";
-import fetch from "node-fetch"; // If your Node version < 18
-
-interface EnheterResponse {
-  _embedded?: {
-    enheter?: Enhet[];
-  };
-}
-
-interface Enhet {
-  organisasjonsnummer: string;
-  navn: string;
-  forretningsadresse?: {
-    land?: string;
-    landkode?: string;
-    postnummer?: string;
-    poststed?: string;
-    adresse?: string[];
-    kommune?: string;
-    kommunenummer?: string;
-  };
-}
-
-// Helper function to format address
-function formatAddress(addr?: Enhet["forretningsadresse"]): string {
-  if (!addr) {
-    return "";
-  }
-  const street = addr.adresse?.join(", ") ?? "";
-  const post = [addr.postnummer, addr.poststed].filter(Boolean).join(" ");
-  const country = addr.land ?? "Norge";
-
-  return [street, post, country].filter(Boolean).join(", ");
-}
-
-// Helper function to detect numeric vs text input
-function isAllDigits(str: string) {
-  return /^\d+$/.test(str);
-}
+import { List, ActionPanel, Action } from "@raycast/api";
+import CompanyDetailsView from "./components/CompanyDetailsView";
+import FavoritesList from "./components/FavoritesList";
+import SearchResults from "./components/SearchResults";
+import SettingsView from "./components/SettingsView";
+import KeyboardShortcutsHelp from "./components/KeyboardShortcutsHelp";
+import { useFavorites } from "./hooks/useFavorites";
+import { useSearch } from "./hooks/useSearch";
+import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
+import { useCompanyView } from "./hooks/useCompanyView";
+import { useSettings } from "./hooks/useSettings";
 
 export default function SearchAndCopyCommand() {
-  const [searchText, setSearchText] = useState("");
-  const [entities, setEntities] = useState<Enhet[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const favoritesResult = useFavorites();
+  const searchResult = useSearch();
+  const keyboardResult = useKeyboardShortcuts();
+  const companyViewResult = useCompanyView();
+  const settingsResult = useSettings();
 
-  const {
-    value: favorites,
-    setValue: setFavorites,
-    isLoading: isLoadingFavorites,
-  } = useLocalStorage<Enhet[]>("favorites", []);
-
-  const trimmed = searchText.trim();
-  const isNumeric = isAllDigits(trimmed);
-
-  useEffect(() => {
-    // If empty, clear results
-    if (!trimmed) {
-      setEntities([]);
-      return;
-    }
-
-    // Org. No.'s are exactly 9 digits in Norway, avoid calling the API with less
-    if (isNumeric && trimmed.length < 9) {
-      setEntities([]);
-      return;
-    }
-
-    // Decide which parameter to use for the API call. Norwegian words for the API call
-    const paramName = isNumeric ? "organisasjonsnummer" : "navn";
-
-    async function fetchEntities() {
-      setIsLoading(true);
-      try {
-        const response = await fetch(
-          `https://data.brreg.no/enhetsregisteret/api/enheter?${paramName}=${encodeURIComponent(trimmed)}`,
-        );
-        if (!response.ok) {
-          throw new Error(`API responded with status ${response.status}`);
-        }
-        const data = (await response.json()) as EnheterResponse;
-        setEntities(data._embedded?.enheter || []);
-      } catch (error) {
-        showToast(Toast.Style.Failure, "Failed to fetch legal entities", (error as { message?: string })?.message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchEntities();
-  }, [searchText]);
-
-  const favoritesList = favorites ?? [];
-
-  const favoriteIds = useMemo(() => new Set(favoritesList.map((f) => f.organisasjonsnummer)), [favoritesList]);
-
-  function addFavorite(entity: Enhet) {
-    if (favoriteIds.has(entity.organisasjonsnummer)) {
-      return;
-    }
-    const next = [entity, ...favoritesList];
-    setFavorites(next);
-    showToast(Toast.Style.Success, "Added to Favorites", entity.navn);
+  // Guard against undefined hook results
+  if (!favoritesResult || !searchResult || !keyboardResult || !companyViewResult || !settingsResult) {
+    return (
+      <List isLoading={true}>
+        <List.Section title="Loading">
+          <List.Item title="Initializing..." subtitle="Please wait..." />
+        </List.Section>
+      </List>
+    );
   }
 
-  function removeFavorite(entity: Enhet) {
-    if (!favoriteIds.has(entity.organisasjonsnummer)) {
-      return;
-    }
-    const next = favoritesList.filter((f) => f.organisasjonsnummer !== entity.organisasjonsnummer);
-    setFavorites(next);
-    showToast(Toast.Style.Success, "Removed from Favorites", entity.navn);
+  // Now safe to destructure all hooks
+  const { entities, isLoading, setSearchText } = searchResult;
+  const { showMoveIndicators: keyboardMoveIndicators } = keyboardResult;
+  const { currentCompany, isLoadingDetails, isCompanyViewOpen, handleViewDetails, closeCompanyView } =
+    companyViewResult;
+
+  const { settings } = settingsResult;
+
+  // Now safe to destructure
+  const {
+    favorites,
+    favoriteIds,
+    favoriteById,
+    isLoadingFavorites,
+    addFavorite,
+    removeFavorite,
+    updateFavoriteEmoji,
+    resetFavoriteToFavicon,
+    refreshFavoriteFavicon,
+    moveFavoriteUp,
+    moveFavoriteDown,
+    toggleMoveMode,
+  } = favoritesResult;
+
+  // Use the keyboard shortcuts from the hook
+  const showMoveIndicators = keyboardMoveIndicators;
+
+  if (isCompanyViewOpen) {
+    return <CompanyDetailsView company={currentCompany!} isLoading={isLoadingDetails} onBack={closeCompanyView} />;
   }
 
   return (
@@ -118,77 +64,74 @@ export default function SearchAndCopyCommand() {
       isLoading={isLoading || isLoadingFavorites}
       onSearchTextChange={setSearchText}
       throttle
-      searchBarPlaceholder="Search for name or organisation number"
+      searchBarPlaceholder={
+        showMoveIndicators
+          ? "Move Mode Active - Use ⌘⇧↑↓ to reorder favorites"
+          : "Search for name or organisation number"
+      }
     >
-      {favoritesList.length > 0 && (
-        <List.Section title="Favorites">
-          {favoritesList.map((entity) => {
-            const addressString = formatAddress(entity.forretningsadresse);
-            return (
-              <List.Item
-                key={`fav-${entity.organisasjonsnummer}`}
-                title={entity.navn}
-                subtitle={entity.organisasjonsnummer}
-                accessories={addressString ? [{ text: addressString }] : []}
-                actions={
-                  <ActionPanel>
-                    <Action.CopyToClipboard content={entity.organisasjonsnummer} title="Copy Org. Nr." />
-                    {addressString && <Action.CopyToClipboard content={addressString} title="Copy Business Address" />}
-                    <Action.OpenInBrowser
-                      shortcut={{ modifiers: ["cmd", "shift"], key: "enter" }}
-                      title="Open in Brønnøysundregistrene"
-                      url={`https://virksomhet.brreg.no/nb/oppslag/enheter/${entity.organisasjonsnummer}`}
-                    />
-                    <Action
-                      title="Remove from Favorites"
-                      onAction={() => removeFavorite(entity)}
-                      shortcut={{ modifiers: ["cmd"], key: "backspace" }}
-                    />
-                  </ActionPanel>
-                }
-              />
-            );
-          })}
-        </List.Section>
-      )}
+      <FavoritesList
+        favorites={favorites}
+        showMoveIndicators={showMoveIndicators}
+        onViewDetails={handleViewDetails}
+        onRemoveFavorite={removeFavorite}
+        onUpdateEmoji={updateFavoriteEmoji}
+        onResetToFavicon={resetFavoriteToFavicon}
+        onRefreshFavicon={refreshFavoriteFavicon}
+        onMoveUp={moveFavoriteUp}
+        onMoveDown={moveFavoriteDown}
+        onToggleMoveMode={toggleMoveMode}
+      />
 
-      {entities.length === 0 && isNumeric && trimmed.length > 0 && trimmed.length < 9 ? (
-        <List.EmptyView
-          title="Waiting for 9 digits"
-          description="Norwegian organisation numbers are 9 digits long. Keep typing…"
-        />
-      ) : (
-        <List.Section title="Results">
-          {entities.map((entity) => {
-            const addressString = formatAddress(entity.forretningsadresse);
-            const alreadyFavorite = favoriteIds.has(entity.organisasjonsnummer);
-            return (
-              <List.Item
-                key={entity.organisasjonsnummer}
-                title={entity.navn}
-                subtitle={entity.organisasjonsnummer}
-                accessories={addressString ? [{ text: addressString }] : []}
-                actions={
-                  <ActionPanel>
-                    <Action.CopyToClipboard content={entity.organisasjonsnummer} title="Copy Org. Nr." />
-                    {addressString && <Action.CopyToClipboard content={addressString} title="Copy Business Address" />}
-                    <Action.OpenInBrowser
-                      shortcut={{ modifiers: ["cmd", "shift"], key: "enter" }}
-                      title="Open in Brønnøysundregistrene"
-                      url={`https://virksomhet.brreg.no/nb/oppslag/enheter/${entity.organisasjonsnummer}`}
-                    />
-                    {alreadyFavorite ? (
-                      <Action title="Remove from Favorites" onAction={() => removeFavorite(entity)} />
-                    ) : (
-                      <Action title="Add to Favorites" onAction={() => addFavorite(entity)} />
-                    )}
-                  </ActionPanel>
-                }
-              />
-            );
-          })}
-        </List.Section>
-      )}
+      <SearchResults
+        entities={entities}
+        favoriteIds={favoriteIds as Set<string>}
+        favoriteById={favoriteById}
+        onViewDetails={handleViewDetails}
+        onAddFavorite={addFavorite}
+        onRemoveFavorite={removeFavorite}
+        onUpdateEmoji={updateFavoriteEmoji}
+        onResetToFavicon={resetFavoriteToFavicon}
+        onRefreshFavicon={refreshFavoriteFavicon}
+      />
+
+      {/* Show welcome message when no favorites and no search results */}
+      {settings.showWelcomeMessage &&
+        favorites.length === 0 &&
+        entities.length === 0 &&
+        !isLoading &&
+        !isLoadingFavorites && (
+          <List.Section title="Getting Started">
+            <List.Item
+              title="Welcome to Brreg Search!"
+              subtitle="Your gateway to Norwegian business information"
+              icon="🇳🇴"
+              accessories={[
+                { text: "Search for companies above" },
+                { text: "Add favorites with ⌘F" },
+                { text: "Organize with custom emojis" },
+                { text: "Reorder favorites with ⌘⇧↑↓" },
+              ]}
+              actions={
+                <ActionPanel>
+                  <Action.Push title="Open Settings" target={<SettingsView />} />
+                  <Action.Push title="Keyboard Shortcuts" target={<KeyboardShortcutsHelp />} />
+                </ActionPanel>
+              }
+            />
+            <List.Item
+              title="Quick Tips"
+              subtitle="Make the most of your search experience"
+              icon="💡"
+              accessories={[
+                { text: "Search by company name" },
+                { text: "Or organization number" },
+                { text: "View detailed company info" },
+                { text: "Copy addresses and details" },
+              ]}
+            />
+          </List.Section>
+        )}
     </List>
   );
 }

@@ -82,6 +82,8 @@ The extension provides a comprehensive company details view with three interacti
 ## Requirements
 
 - **No credentials or API keys** are required. Brreg provides open, free access to its Enhetsregisteret endpoints.
+- **Map functionality** uses free OpenStreetMap services (Nominatim for geocoding, tiles for map display).
+- **Directions** link to Google Maps without requiring an API key.
 
 ## Privacy & Data Usage
 

@@ -9,8 +9,12 @@ import { useSearch } from "./hooks/useSearch";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { useCompanyView } from "./hooks/useCompanyView";
 import { useSettings } from "./hooks/useSettings";
+import { useState, useEffect } from "react";
+import { Enhet } from "./types";
 
 export default function SearchAndCopyCommand() {
+  const [selectedEntity, setSelectedEntity] = useState<Enhet | null>(null);
+
   const favoritesResult = useFavorites();
   const searchResult = useSearch();
   const keyboardResult = useKeyboardShortcuts();
@@ -30,7 +34,7 @@ export default function SearchAndCopyCommand() {
 
   // Now safe to destructure all hooks
   const { entities, isLoading, setSearchText } = searchResult;
-  const { showMoveIndicators: keyboardMoveIndicators } = keyboardResult;
+  const { showMoveIndicators: keyboardMoveIndicators, handleCopyOrgNumber } = keyboardResult;
   const { currentCompany, isLoadingDetails, isCompanyViewOpen, handleViewDetails, closeCompanyView } =
     companyViewResult;
 
@@ -55,6 +59,20 @@ export default function SearchAndCopyCommand() {
   // Use the keyboard shortcuts from the hook
   const showMoveIndicators = keyboardMoveIndicators;
 
+  // Handle copy organization number keyboard shortcut
+  useEffect(() => {
+    const handleCopyEvent = () => {
+      if (selectedEntity) {
+        handleCopyOrgNumber(selectedEntity.organisasjonsnummer);
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("copyOrgNumber", handleCopyEvent);
+      return () => window.removeEventListener("copyOrgNumber", handleCopyEvent);
+    }
+  }, [selectedEntity, handleCopyOrgNumber]);
+
   if (isCompanyViewOpen) {
     return <CompanyDetailsView company={currentCompany!} isLoading={isLoadingDetails} onBack={closeCompanyView} />;
   }
@@ -69,6 +87,11 @@ export default function SearchAndCopyCommand() {
           ? "Move Mode Active - Use ⌘⇧↑↓ to reorder favorites"
           : "Search for name or organisation number"
       }
+      onSelectionChange={(id) => {
+        // Find the selected entity from either favorites or search results
+        const entity = [...favorites, ...entities].find((e) => e.organisasjonsnummer === id);
+        setSelectedEntity(entity || null);
+      }}
     >
       <FavoritesList
         favorites={favorites}
@@ -111,6 +134,7 @@ export default function SearchAndCopyCommand() {
                 { text: "Add favorites with ⌘F" },
                 { text: "Organize with custom emojis" },
                 { text: "Reorder favorites with ⌘⇧↑↓" },
+                { text: "Copy org number with ⌘O" },
               ]}
               actions={
                 <ActionPanel>

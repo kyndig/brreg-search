@@ -1,8 +1,6 @@
-import { Action, ActionPanel, Detail, Icon } from "@raycast/api";
-import { useEffect, useState } from "react";
+import { Detail, ActionPanel, Action, Icon } from "@raycast/api";
 import { Company } from "../types";
-import fetch from "node-fetch";
-import { Buffer } from "buffer";
+import { useState, useEffect } from "react";
 
 interface CompanyDetailsViewProps {
   company: Company;
@@ -11,13 +9,17 @@ interface CompanyDetailsViewProps {
 }
 
 export default function CompanyDetailsView({ company, isLoading, onBack }: CompanyDetailsViewProps) {
+  const [activeTab, setActiveTab] = useState<"overview" | "financials" | "map">("overview");
+  const [mapImageUrl, setMapImageUrl] = useState<string | undefined>(undefined);
+  const [mapImageDataUri, setMapImageDataUri] = useState<string | undefined>(undefined);
+
+  // Format address manually since we don't have the Enhet format
   const addressParts: string[] = [];
   if (company.address) addressParts.push(company.address);
   if (company.postalCode && company.city) addressParts.push(`${company.postalCode} ${company.city}`);
   else if (company.city) addressParts.push(company.city);
   const formattedAddress = addressParts.join(", ");
 
-  const [activeTab, setActiveTab] = useState<"overview" | "financials" | "map">("overview");
   const tabOrder: Array<"overview" | "financials" | "map"> = ["overview", "financials", "map"];
   const goToPreviousTab = () => {
     const currentIndex = tabOrder.indexOf(activeTab);
@@ -25,91 +27,13 @@ export default function CompanyDetailsView({ company, isLoading, onBack }: Compa
     setActiveTab(tabOrder[previousIndex]);
   };
 
-  const headerChips: string[] = [];
-  if (company.isVatRegistered !== undefined) headerChips.push(company.isVatRegistered ? "MVA" : "No MVA");
-  if (company.isAudited !== undefined) headerChips.push(company.isAudited ? "Audited" : "Not Audited");
+  const tabs = [
+    { id: "overview", title: "Overview" },
+    { id: "financials", title: "Financials" },
+    { id: "map", title: "Map" },
+  ] as const;
 
-  const quickLinks = [
-    `[Open in Brreg](${company.bregUrl || "https://www.brreg.no"})`,
-    company.organizationNumber
-      ? `[Open in Proff](https://www.proff.no/selskap/${company.organizationNumber})`
-      : undefined,
-  ]
-    .filter(Boolean)
-    .join(" • ");
-
-  // Render a simple markdown "tabs" row above the title
-  const tabsRow = (
-    [
-      { id: "overview", title: "Overview" },
-      { id: "financials", title: "Financials" },
-      { id: "map", title: "Map" },
-    ] as const
-  )
-    .map((t) => {
-      const isActive = activeTab === t.id;
-      const bullet = isActive ? "●" : "○";
-      const label = isActive ? `**${t.title}**` : t.title;
-      return `${bullet} ${label}`;
-    })
-    .join("   ");
-
-  const header =
-    `${tabsRow}\n\n# ${company.name}\n\n` +
-    (company.organizationNumber ? `Org no.: ${company.organizationNumber}` : "") +
-    (headerChips.length ? `  •  ${headerChips.map((c) => `${c}`).join("  ")}` : "") +
-    (quickLinks ? `\n\n${quickLinks}` : "");
-
-  const overviewSection = `
-${company.description ? `**Stated purpose:** ${company.description}\n\n` : ""}
-${company.employees ? `**Employees:** ${company.employees}\n` : ""}
-${company.website ? `**Website:** ${company.website}\n` : ""}
-${company.phone ? `**Phone:** ${company.phone}\n` : ""}
-${company.email ? `Email: ${company.email}\n` : ""}
-
-${
-  company.accountingYear || company.revenue || company.operatingResult || company.result
-    ? `
-### Key KPIs
-- Revenue: ${company.revenue ?? "–"}
-- Operating Result: ${company.operatingResult ?? "–"}
-- Net Result: ${company.result ?? "–"}
-${company.accountingYear ? `- Accounting Year: ${company.accountingYear}` : ""}
-`
-    : ""
-}
-
-${company.lastAccountsToDate ? `Last filing: ${new Date(company.lastAccountsToDate).toLocaleDateString("no-NO")}` : ""}
-`;
-
-  const hasAnyFinancialValue = Boolean(
-    company.revenue ||
-      company.ebitda ||
-      company.operatingResult ||
-      company.result ||
-      company.totalAssets ||
-      company.equity ||
-      company.totalDebt ||
-      company.depreciation ||
-      company.accountingYear,
-  );
-
-  const financialsSection = hasAnyFinancialValue
-    ? `
-${company.revenue ? `**Revenue:** ${company.revenue}\n` : ""}
-${company.ebitda ? `**EBITDA:** ${company.ebitda}\n` : ""}
-${company.operatingResult ? `**Operating Result:** ${company.operatingResult}\n` : ""}
-${company.result ? `**Net Result:** ${company.result}\n` : ""}
-${company.totalAssets ? `**Total Assets:** ${company.totalAssets}\n` : ""}
-${company.equity ? `**Equity:** ${company.equity}\n` : ""}
-${company.totalDebt ? `**Total Debt:** ${company.totalDebt}\n` : ""}
-${company.depreciation ? `**Depreciation:** ${company.depreciation}\n` : ""}
-${company.accountingYear ? `\n_Last accounting year_: ${company.accountingYear}` : ""}
-`
-    : `_No financial data available_`;
-
-  const [mapImageUrl, setMapImageUrl] = useState<string | undefined>(undefined);
-  const [mapImageDataUri, setMapImageDataUri] = useState<string | undefined>(undefined);
+  // Map functionality
   useEffect(() => {
     let cancelled = false;
     async function geocodeAndBuildMap() {
@@ -172,15 +96,41 @@ ${company.accountingYear ? `\n_Last accounting year_: ${company.accountingYear}`
     };
   }, [mapImageUrl, mapImageDataUri]);
 
-  const mapSection = `
-${formattedAddress ? `Address: ${formattedAddress}\n` : ""}
-[Directions](https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(formattedAddress || company.name)})
-${mapImageDataUri ? `\n![](${mapImageDataUri})\n` : mapImageUrl ? `\n![Tile](${mapImageUrl})\n` : formattedAddress ? "\n_Locating on map…_\n" : ""}
-`;
+  const markdown =
+    activeTab === "overview"
+      ? `${tabs
+          .map((t) => {
+            const isActive = t.id === activeTab;
+            const bullet = isActive ? "●" : "○";
+            const label = isActive ? `**${t.title}**` : t.title;
+            return `${bullet} ${label}`;
+          })
+          .join("   ")}\n\n# ${company.name}
 
-  const markdown = `${header}\n\n---\n\n${
-    activeTab === "overview" ? overviewSection : activeTab === "financials" ? financialsSection : mapSection
-  }\n\n---\n*Data from Brønnøysundregistrene (The Brønnøysund Register Centre)*`;
+${company.description ? `**Description:** ${company.description}\n\n` : ""}${company.organizationNumber ? `**Organization Number:** ${company.organizationNumber}\n\n` : ""}${company.address ? `**Address:** ${company.address}\n\n` : ""}${company.phone ? `**Phone:** ${company.phone}\n\n` : ""}${company.email ? `**Email:** ${company.email}\n\n` : ""}${company.website ? `**Website:** [${company.website}](${company.website})\n\n` : ""}${company.employees ? `**Employees:** ${company.employees}\n\n` : ""}${company.industry ? `**Industry:** ${company.industry}\n\n` : ""}${company.isVatRegistered !== undefined ? `**VAT Registered:** ${company.isVatRegistered ? "Yes" : "No"}\n\n` : ""}${company.isAudited !== undefined ? `**Audited:** ${company.isAudited ? "Yes" : "No"}\n\n` : ""}${company.lastAccountsFromDate ? `**Last Filing Date:** ${company.lastAccountsFromDate}\n\n` : ""}${company.bregUrl ? `[Open in Brønnøysundregistrene](${company.bregUrl})` : ""}${company.organizationNumber ? ` | [Search in Proff](https://www.proff.no/bransjes%C3%B8k?q=${encodeURIComponent(company.name)})` : ""}`
+      : activeTab === "financials"
+        ? `${tabs
+            .map((t) => {
+              const isActive = t.id === activeTab;
+              const bullet = isActive ? "●" : "○";
+              const label = isActive ? `**${t.title}**` : t.title;
+              return `${bullet} ${label}`;
+            })
+            .join("   ")}\n\n# Financial Information
+
+${company.accountingYear ? `**Accounting Year:** ${company.accountingYear}\n\n` : ""}${company.revenue ? `**Revenue:** ${company.revenue}\n\n` : ""}${company.ebitda ? `**EBITDA:** ${company.ebitda}\n\n` : ""}${company.operatingResult ? `**Operating Result:** ${company.operatingResult}\n\n` : ""}${company.result ? `**Net Result:** ${company.result}\n\n` : ""}${company.totalAssets ? `**Total Assets:** ${company.totalAssets}\n\n` : ""}${company.equity ? `**Equity:** ${company.equity}\n\n` : ""}${company.totalDebt ? `**Total Debt:** ${company.totalDebt}\n\n` : ""}${company.depreciation ? `**Depreciation:** ${company.depreciation}\n\n` : ""}${company.isAudited !== undefined ? `**Audited:** ${company.isAudited ? "Yes" : "No"}\n\n` : ""}`
+        : activeTab === "map"
+          ? `${tabs
+              .map((t) => {
+                const isActive = t.id === activeTab;
+                const bullet = isActive ? "●" : "○";
+                const label = isActive ? `**${t.title}**` : t.title;
+                return `${bullet} ${label}`;
+              })
+              .join("   ")}\n\n# Location Information
+
+${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ? `![Map](${mapImageUrl})\n\n` : ""}${formattedAddress ? `[Get Directions](https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(formattedAddress)})` : ""}`
+          : "";
 
   const renderMetadata = () => {
     if (activeTab === "overview") {
@@ -278,8 +228,8 @@ ${mapImageDataUri ? `\n![](${mapImageDataUri})\n` : mapImageUrl ? `\n![Tile](${m
           <Action.OpenInBrowser title="Open in Brreg" url={company.bregUrl || "https://www.brreg.no"} />
           {company.organizationNumber && (
             <Action.OpenInBrowser
-              title="Open in Proff"
-              url={`https://www.proff.no/selskap/${company.organizationNumber}`}
+              title="Search in Proff"
+              url={`https://www.proff.no/bransjes%C3%B8k?q=${encodeURIComponent(company.name)}`}
             />
           )}
           <Action.CopyToClipboard title="Copy Organization Number" content={company.organizationNumber} />

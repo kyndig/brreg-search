@@ -140,8 +140,7 @@ export function useFavorites() {
     );
   };
 
-  // Ensure we always return a valid object with all required properties
-  const result = {
+  return {
     // State
     favorites: favoritesList,
     favoriteIds,
@@ -163,28 +162,4 @@ export function useFavorites() {
     hasFavorites: favoritesList.length > 0,
     getFavoriteByOrgNumber: (orgNumber: string) => favoriteById.get(orgNumber),
   };
-
-  // Validate that all required properties exist
-  if (!result.favorites || !result.favoriteIds || !result.favoriteById) {
-    console.warn("useFavorites: Some properties are undefined, returning fallback values");
-    return {
-      favorites: [],
-      favoriteIds: new Set(),
-      favoriteById: new Map(),
-      isLoadingFavorites: false,
-      showMoveIndicators: false,
-      addFavorite: () => {},
-      removeFavorite: () => {},
-      updateFavoriteEmoji: () => {},
-      resetFavoriteToFavicon: () => {},
-      refreshFavoriteFavicon: () => {},
-      moveFavoriteUp: () => {},
-      moveFavoriteDown: () => {},
-      toggleMoveMode: () => {},
-      hasFavorites: false,
-      getFavoriteByOrgNumber: () => undefined,
-    };
-  }
-
-  return result;
 }

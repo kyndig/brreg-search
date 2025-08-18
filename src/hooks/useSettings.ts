@@ -20,10 +20,15 @@ const DEFAULT_SETTINGS: UserSettings = {
  * Hook for managing user settings and preferences
  */
 export function useSettings() {
-  const [settings, setSettings] = useLocalStorage<UserSettings>("user-settings", DEFAULT_SETTINGS);
+  const {
+    value: settings,
+    setValue: setSettings,
+    isLoading,
+  } = useLocalStorage<UserSettings>("user-settings", DEFAULT_SETTINGS);
 
   const updateSetting = <K extends keyof UserSettings>(key: K, value: UserSettings[K]) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
+    const current = settings ?? DEFAULT_SETTINGS;
+    setSettings({ ...current, [key]: value });
   };
 
   const resetToDefaults = () => {
@@ -31,16 +36,18 @@ export function useSettings() {
   };
 
   const toggleSetting = <K extends keyof UserSettings>(key: K) => {
-    if (typeof settings[key] === "boolean") {
-      updateSetting(key, !settings[key] as boolean);
+    const current = settings ?? DEFAULT_SETTINGS;
+    if (typeof current[key] === "boolean") {
+      updateSetting(key, !current[key] as boolean as UserSettings[K]);
     }
   };
 
   return {
-    settings,
+    settings: settings ?? DEFAULT_SETTINGS,
     updateSetting,
     resetToDefaults,
     toggleSetting,
     DEFAULT_SETTINGS,
+    isLoading,
   };
 }

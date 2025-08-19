@@ -41,9 +41,7 @@
 - **Constants Management**: Centralized configuration for easy maintenance
 - **Dependency Cleanup**: Removed unused Google Static Maps API key requirement
 
----
-
-## Version 1.1.0 - Initial Enhancement Release – {PR_MERGE_DATE}
+## [Version 1.1.0 - Initial Enhancement Release] – 2025-08-19
 
 ♻️ **What's Changed:**
 - Corrected the English name of Brønnøysundregistrene to the official translation (The Brønnøysund Register Centre).
@@ -54,9 +52,7 @@
 - Company details view with financial information
 - Map integration for company locations
 
----
-
-## Version 1.0.0 - Initial Release - 2025-02-25
+## [Version 1.0.0 - Initial Release] - 2025-02-25
 
 🎯 **Core Features:**
 - Search Norwegian companies by name or organization number

@@ -69,6 +69,7 @@ The extension provides a comprehensive company details view with three interacti
 - **⌘F**: Add company to favorites
 - **⌘⇧F**: Remove company from favorites  
 - **⌘O**: Copy organization number
+- **⌘B**: Copy business address
 - **⌘⇧Enter**: Open company in Brønnøysundregistrene
 - **⌘⇧↑**: Move favorite up in list
 - **⌘⇧↓**: Move favorite down in list
@@ -76,7 +77,6 @@ The extension provides a comprehensive company details view with three interacti
 - **⌘2**: Switch to Financials tab
 - **⌘3**: Switch to Map tab
 - **⌘←**: Go back from company details
-- **Backspace**: Navigate to previous tab
 - **⌘⇧M**: Toggle move mode for favorites
 - **⌘⇧**: Hold to show move indicators (for favorites reordering)
 

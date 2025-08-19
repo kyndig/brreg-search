@@ -60,8 +60,8 @@ export function useKeyboardShortcuts() {
         }
       }
 
-      // Handle copy business address (cmd+a)
-      if (event.metaKey && event.key === "a" && !event.shiftKey && !event.altKey) {
+      // Handle copy business address (cmd+b)
+      if (event.metaKey && event.key === "b" && !event.shiftKey && !event.altKey) {
         event.preventDefault();
         // Emit a custom event that components can listen to
         // The component will need to provide the current address

@@ -48,7 +48,7 @@ function EntityActions({
         <Action.CopyToClipboard
           content={addressString}
           title="Copy Business Address"
-          shortcut={{ modifiers: ["cmd"], key: "a" }}
+          shortcut={{ modifiers: ["cmd"], key: "b" }}
           onCopy={() => onCopyAddress(addressString)}
         />
       )}

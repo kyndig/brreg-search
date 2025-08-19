@@ -1,6 +1,5 @@
 import { Detail, ActionPanel, Action, Icon } from "@raycast/api";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
-import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
 import { Company } from "../types";
 import { useState, useEffect } from "react";
 
@@ -13,8 +12,14 @@ interface CompanyDetailsViewProps {
   onRemoveFavorite: () => void;
 }
 
-export default function CompanyDetailsView({ company, isLoading, onBack, isFavorite, onAddFavorite, onRemoveFavorite }: CompanyDetailsViewProps) {
-  const { handleCopyOrgNumber } = useKeyboardShortcuts();
+export default function CompanyDetailsView({
+  company,
+  isLoading,
+  onBack,
+  isFavorite,
+  onAddFavorite,
+  onRemoveFavorite,
+}: CompanyDetailsViewProps) {
   const [activeTab, setActiveTab] = useState<"overview" | "financials" | "map">("overview");
   const [mapImageUrl, setMapImageUrl] = useState<string | undefined>(undefined);
   const [mapImageDataUri, setMapImageDataUri] = useState<string | undefined>(undefined);
@@ -258,7 +263,7 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageDataU
             <Action.CopyToClipboard
               title="Copy Business Address"
               content={formattedAddress}
-              shortcut={{ modifiers: ["cmd"], key: "a" }}
+              shortcut={{ modifiers: ["cmd"], key: "b" }}
             />
           )}
           {isFavorite ? (

@@ -4,7 +4,6 @@ import { formatAddress } from "../utils/format";
 import { canMoveUp, canMoveDown } from "../utils/entity";
 import EntityActions from "./EntityActions";
 import FavoriteActions from "./FavoriteActions";
-import { useEntityActions } from "../hooks/useEntityActions";
 
 interface FavoritesListProps {
   favorites: Enhet[];
@@ -31,7 +30,6 @@ export default function FavoritesList({
   onMoveDown,
   onToggleMoveMode,
 }: FavoritesListProps) {
-  const { handleCopyOrgNumber, handleCopyAddress } = useEntityActions();
   if (favorites.length === 0) {
     return (
       <List.Section title="Favorites">
@@ -89,8 +87,18 @@ export default function FavoritesList({
                   entity={entity}
                   addressString={addressString}
                   onViewDetails={onViewDetails}
-                  onCopyOrgNumber={() => handleCopyOrgNumber()}
-                  onCopyAddress={() => handleCopyAddress()}
+                  onCopyOrgNumber={(orgNumber) => {
+                    // Copy to clipboard using Raycast's clipboard API
+                    if (typeof navigator !== "undefined" && navigator.clipboard) {
+                      navigator.clipboard.writeText(orgNumber);
+                    }
+                  }}
+                  onCopyAddress={(address) => {
+                    // Copy to clipboard using Raycast's clipboard API
+                    if (typeof navigator !== "undefined" && navigator.clipboard) {
+                      navigator.clipboard.writeText(address);
+                    }
+                  }}
                   onOpenInBrowser={() => showToast(Toast.Style.Success, "Opening in browser")}
                 />
                 <FavoriteActions

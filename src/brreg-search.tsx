@@ -34,7 +34,7 @@ export default function SearchAndCopyCommand() {
 
   // Now safe to destructure all hooks
   const { entities, isLoading, setSearchText, trimmed } = searchResult;
-  const { showMoveIndicators: keyboardMoveIndicators, handleCopyOrgNumber } = keyboardResult;
+  const { showMoveIndicators: keyboardMoveIndicators, handleCopyOrgNumber, handleCopyAddress } = keyboardResult;
   const { currentCompany, isLoadingDetails, isCompanyViewOpen, handleViewDetails, closeCompanyView } =
     companyViewResult;
 
@@ -73,7 +73,7 @@ export default function SearchAndCopyCommand() {
       if (selectedEntity) {
         const addressString = selectedEntity.forretningsadresse?.adresse?.join(", ");
         if (addressString) {
-          handleCopyOrgNumber(addressString); // Reuse the same function for now
+          handleCopyAddress(addressString); // Reuse the same function for now
         }
       }
     };
@@ -86,7 +86,7 @@ export default function SearchAndCopyCommand() {
         window.removeEventListener("copyAddress", handleCopyAddressEvent);
       };
     }
-  }, [isCompanyViewOpen, selectedEntity, handleCopyOrgNumber]);
+  }, [isCompanyViewOpen, selectedEntity, handleCopyOrgNumber, handleCopyAddress]);
 
   if (isCompanyViewOpen) {
     const orgNumber = currentCompany!.organizationNumber;
@@ -185,7 +185,7 @@ export default function SearchAndCopyCommand() {
                   <Action.Push title="Open" target={<KeyboardShortcutsHelp />} />
                 </ActionPanel>
               }
-              />
+            />
           </List.Section>
         )}
     </List>

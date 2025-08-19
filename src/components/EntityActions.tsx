@@ -1,4 +1,5 @@
 import { Action, Icon } from "@raycast/api";
+import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import { Enhet } from "../types";
 import React from "react";
 
@@ -56,6 +57,7 @@ function EntityActions({
         url={bregUrl}
         onOpen={() => onOpenInBrowser(bregUrl)}
       />
+      <Action.Push title="Keyboard Shortcuts" target={<KeyboardShortcutsHelp />} />
     </>
   );
 }

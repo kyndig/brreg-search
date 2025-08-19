@@ -61,17 +61,32 @@ export default function SearchAndCopyCommand() {
 
   // Handle copy organization number keyboard shortcut
   useEffect(() => {
+    if (isCompanyViewOpen) return;
+
     const handleCopyEvent = () => {
       if (selectedEntity) {
         handleCopyOrgNumber(selectedEntity.organisasjonsnummer);
       }
     };
 
+    const handleCopyAddressEvent = () => {
+      if (selectedEntity) {
+        const addressString = selectedEntity.forretningsadresse?.adresse?.join(", ");
+        if (addressString) {
+          handleCopyOrgNumber(addressString); // Reuse the same function for now
+        }
+      }
+    };
+
     if (typeof window !== "undefined") {
       window.addEventListener("copyOrgNumber", handleCopyEvent);
-      return () => window.removeEventListener("copyOrgNumber", handleCopyEvent);
+      window.addEventListener("copyAddress", handleCopyAddressEvent);
+      return () => {
+        window.removeEventListener("copyOrgNumber", handleCopyEvent);
+        window.removeEventListener("copyAddress", handleCopyAddressEvent);
+      };
     }
-  }, [selectedEntity, handleCopyOrgNumber]);
+  }, [isCompanyViewOpen, selectedEntity, handleCopyOrgNumber]);
 
   if (isCompanyViewOpen) {
     const orgNumber = currentCompany!.organizationNumber;

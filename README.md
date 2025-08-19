@@ -12,6 +12,7 @@ Search and retrieve information about Norwegian companies (Enhetsregisteret) dir
 - **Copy Data**: Copy the organisation number or address with a single action.
 - **Open in Browser**: Quickly jump to the company's details page in the Brønnøysund Register website.
 - **Favorites**: Save companies to a favorites list that appears above your search results. Revisit them instantly, copy details, or open them in the browser. Favorites are stored locally and persist across sessions.
+- **Results While Typing**: Favorites are hidden while typing; results show after you type the first character.
 - **Detailed Company View**: View comprehensive company information including contact details, financial data, and location information.
 - **Financial Data**: Access key financial metrics including revenue, EBITDA, operating result, net result, total assets, equity, total debt, and depreciation.
 - **Interactive Tabs**: Navigate between Overview, Financials, and Map tabs in the company details view.
@@ -35,8 +36,8 @@ Search and retrieve information about Norwegian companies (Enhetsregisteret) dir
 
 ## Favorites
 
-- **Add a favorite**: Select a company in the results and choose "Add to Favorites" from the action panel.
-- **Remove a favorite**: Select it from the Favorites section and choose "Remove from Favorites" (shortcut: `⌘⇧F`).
+- **Add a favorite**: Select a company in the results and choose "Add to Favorites" from the action panel or via keyboard shortcut `⌘F`. Works in the detailed view as well.
+- **Remove a favorite**: Select it from the Favorites section, choose "Remove from Favorites", or use keyboard shortcut: `⌘⇧F`. Also available in the detailed view.
 - **Customize with emojis**: Choose from predefined emoji categories (⭐ Star, 🏦 Bank, 📈 Growth, 🧪 Test, 🛍️ Retail, 🧑‍💻 Tech, 🏗️ Construction, 🏥 Health, 🍽️ Food, ⚙️ Industry) or set custom emojis.
 - **Reorder favorites**: Move favorites up and down to organize them in your preferred order using the "Move Up" (⌘↑) and "Move Down" (⌘↓) actions.
 - **Automatic favicon detection**: Company website favicons are automatically detected and displayed for visual identification.
@@ -53,7 +54,7 @@ Search and retrieve information about Norwegian companies (Enhetsregisteret) dir
   - Configure maximum search results
   - Enable/disable move indicators
   - Toggle performance monitoring
-- **Keyboard Shortcuts Help**: Comprehensive guide accessible from the welcome section showing all available shortcuts.
+- **Keyboard Shortcuts Help**: Comprehensive guide accessible from any view via the action menu (and from the welcome screen).
 
 ## Company Details View
 
@@ -78,6 +79,10 @@ The extension provides a comprehensive company details view with three interacti
 - **Backspace**: Navigate to previous tab
 - **⌘⇧M**: Toggle move mode for favorites
 - **⌘⇧**: Hold to show move indicators (for favorites reordering)
+
+## Feedback
+
+- Feature requests and issues: https://github.com/kyndig/brreg-search
 
 ## Requirements
 

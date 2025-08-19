@@ -34,16 +34,16 @@ export default function FavoritesList({
   const { handleCopyOrgNumber, handleCopyAddress } = useEntityActions();
   if (favorites.length === 0) {
     return (
-      <List.Section title="Welcome to Brreg Search">
+      <List.Section title="Favorites">
         <List.Item
           title="No favorites yet"
-          subtitle="Start building your collection of companies"
+          subtitle="Search and ⌘F to add favorites "
           icon="⭐"
-          accessories={[
-            { text: "Search above to find companies" },
-            { text: "Use ⌘F to add to favorites" },
-            { text: "Organize with custom emojis" },
-          ]}
+          // accessories={[
+          //   { text: "Search above to find companies" },
+          //   { text: "Use ⌘F to add to favorites" },
+          //   { text: "Organize with custom emojis" },
+          // ]}
         />
       </List.Section>
     );

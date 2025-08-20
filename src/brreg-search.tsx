@@ -34,7 +34,7 @@ export default function SearchAndCopyCommand() {
 
   // Now safe to destructure all hooks
   const { entities, isLoading, setSearchText, trimmed } = searchResult;
-  const { showMoveIndicators: keyboardMoveIndicators, handleCopyOrgNumber, handleCopyAddress } = keyboardResult;
+  const { showMoveIndicators: keyboardMoveIndicators } = keyboardResult;
   const { currentCompany, isLoadingDetails, isCompanyViewOpen, handleViewDetails, closeCompanyView } =
     companyViewResult;
 
@@ -59,34 +59,7 @@ export default function SearchAndCopyCommand() {
   // Use the keyboard shortcuts from the hook
   const showMoveIndicators = keyboardMoveIndicators;
 
-  // Handle copy organization number keyboard shortcut
-  useEffect(() => {
-    if (isCompanyViewOpen) return;
 
-    const handleCopyEvent = () => {
-      if (selectedEntity) {
-        handleCopyOrgNumber(selectedEntity.organisasjonsnummer);
-      }
-    };
-
-    const handleCopyAddressEvent = () => {
-      if (selectedEntity) {
-        const addressString = selectedEntity.forretningsadresse?.adresse?.join(", ");
-        if (addressString) {
-          handleCopyAddress(addressString); // Reuse the same function for now
-        }
-      }
-    };
-
-    if (typeof window !== "undefined") {
-      window.addEventListener("copyOrgNumber", handleCopyEvent);
-      window.addEventListener("copyAddress", handleCopyAddressEvent);
-      return () => {
-        window.removeEventListener("copyOrgNumber", handleCopyEvent);
-        window.removeEventListener("copyAddress", handleCopyAddressEvent);
-      };
-    }
-  }, [isCompanyViewOpen, selectedEntity, handleCopyOrgNumber, handleCopyAddress]);
 
   if (isCompanyViewOpen) {
     const orgNumber = currentCompany!.organizationNumber;

@@ -66,10 +66,10 @@ export default function SearchResults({
                   entity={entity}
                   addressString={addressString}
                   onViewDetails={onViewDetails}
-                  onCopyOrgNumber={(orgNumber) => {
+                  onCopyOrgNumber={() => {
                     // Show success toast - clipboard is handled by Action.CopyToClipboard
                   }}
-                  onCopyAddress={(address) => {
+                  onCopyAddress={() => {
                     // Show success toast - clipboard is handled by Action.CopyToClipboard
                   }}
                   onOpenInBrowser={() => {}}

@@ -87,10 +87,10 @@ export default function FavoritesList({
                   entity={entity}
                   addressString={addressString}
                   onViewDetails={onViewDetails}
-                  onCopyOrgNumber={(orgNumber) => {
+                  onCopyOrgNumber={() => {
                     // Show success toast - clipboard is handled by Action.CopyToClipboard
                   }}
-                  onCopyAddress={(address) => {
+                  onCopyAddress={() => {
                     // Show success toast - clipboard is handled by Action.CopyToClipboard
                   }}
                   onOpenInBrowser={() => showToast(Toast.Style.Success, "Opening in browser")}

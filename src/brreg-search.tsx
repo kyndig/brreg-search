@@ -9,12 +9,8 @@ import { useSearch } from "./hooks/useSearch";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { useCompanyView } from "./hooks/useCompanyView";
 import { useSettings } from "./hooks/useSettings";
-import { useState, useEffect } from "react";
-import { Enhet } from "./types";
 
 export default function SearchAndCopyCommand() {
-  const [selectedEntity, setSelectedEntity] = useState<Enhet | null>(null);
-
   const favoritesResult = useFavorites();
   const searchResult = useSearch();
   const keyboardResult = useKeyboardShortcuts();
@@ -59,8 +55,6 @@ export default function SearchAndCopyCommand() {
   // Use the keyboard shortcuts from the hook
   const showMoveIndicators = keyboardMoveIndicators;
 
-
-
   if (isCompanyViewOpen) {
     const orgNumber = currentCompany!.organizationNumber;
     const isFav = favoriteIds.has(orgNumber);
@@ -95,11 +89,6 @@ export default function SearchAndCopyCommand() {
           ? "Move Mode Active - Use ⌘⇧↑↓ to reorder favorites"
           : "Search for name or organisation number"
       }
-      onSelectionChange={(id) => {
-        // Find the selected entity from either favorites or search results
-        const entity = [...favorites, ...entities].find((e) => e.organisasjonsnummer === id);
-        setSelectedEntity(entity || null);
-      }}
     >
       {trimmed.length === 0 && (
         <FavoritesList

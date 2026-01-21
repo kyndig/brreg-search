@@ -8,7 +8,7 @@ Search and retrieve information about Norwegian companies (Enhetsregisteret) dir
 
 - **Search & Retrieval**
   - Search by company name or 9-digit organisation number
-  - Partial numeric search with full-text fallback
+  - Organisation number search requires 9 digits (incomplete numbers won't be queried)
   - Copy organisation number or address with single actions
   - Open companies directly in Brønnøysund Register website
 
@@ -76,7 +76,6 @@ The extension provides a comprehensive company details view with three interacti
 - **⌘3**: Switch to Map tab
 - **⌘←**: Go back from company details
 - **⌘⇧M**: Toggle move mode for favorites
-- **⌘⇧**: Hold to show move indicators (for favorites reordering)
 
 ## Feedback
 

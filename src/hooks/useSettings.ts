@@ -2,18 +2,10 @@ import { useLocalStorage } from "@raycast/utils";
 
 interface UserSettings {
   showWelcomeMessage: boolean;
-  defaultSearchType: "name" | "number" | "both";
-  maxSearchResults: number;
-  showMoveIndicators: boolean;
-  enablePerformanceMonitoring: boolean;
 }
 
 const DEFAULT_SETTINGS: UserSettings = {
   showWelcomeMessage: true,
-  defaultSearchType: "both",
-  maxSearchResults: 50,
-  showMoveIndicators: false,
-  enablePerformanceMonitoring: false,
 };
 
 /**

@@ -15,25 +15,12 @@ export default function SearchAndCopyCommand() {
   const companyViewResult = useCompanyView();
   const settingsResult = useSettings();
 
-  // Guard against undefined hook results
-  if (!favoritesResult || !searchResult || !companyViewResult || !settingsResult) {
-    return (
-      <List isLoading={true}>
-        <List.Section title="Loading">
-          <List.Item title="Initializing..." subtitle="Please wait..." />
-        </List.Section>
-      </List>
-    );
-  }
-
-  // Now safe to destructure all hooks
   const { entities, isLoading, setSearchText, trimmed } = searchResult;
   const { currentCompany, isLoadingDetails, isCompanyViewOpen, handleViewDetails, closeCompanyView } =
     companyViewResult;
 
   const { settings } = settingsResult;
 
-  // Now safe to destructure
   const {
     favorites,
     favoriteIds,
@@ -50,21 +37,21 @@ export default function SearchAndCopyCommand() {
     showMoveIndicators,
   } = favoritesResult;
 
-  if (isCompanyViewOpen) {
-    const orgNumber = currentCompany!.organizationNumber;
+  if (isCompanyViewOpen && currentCompany) {
+    const orgNumber = currentCompany.organizationNumber;
     const isFav = favoriteIds.has(orgNumber);
     const toEnhet = () => ({
-      organisasjonsnummer: currentCompany!.organizationNumber,
-      navn: currentCompany!.name,
-      forretningsadresse: currentCompany!.address
-        ? { adresse: [currentCompany!.address], postnummer: currentCompany!.postalCode, poststed: currentCompany!.city }
+      organisasjonsnummer: currentCompany.organizationNumber,
+      navn: currentCompany.name,
+      forretningsadresse: currentCompany.address
+        ? { adresse: [currentCompany.address], postnummer: currentCompany.postalCode, poststed: currentCompany.city }
         : undefined,
-      website: currentCompany!.website,
+      website: currentCompany.website,
     });
 
     return (
       <CompanyDetailsView
-        company={currentCompany!}
+        company={currentCompany}
         isLoading={isLoadingDetails}
         onBack={closeCompanyView}
         isFavorite={isFav}
@@ -103,7 +90,7 @@ export default function SearchAndCopyCommand() {
       {trimmed.length > 0 && (
         <SearchResults
           entities={entities}
-          favoriteIds={favoriteIds as Set<string>}
+          favoriteIds={favoriteIds}
           favoriteById={favoriteById}
           onViewDetails={handleViewDetails}
           onAddFavorite={addFavorite}

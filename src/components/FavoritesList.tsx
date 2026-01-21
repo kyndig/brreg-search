@@ -1,4 +1,4 @@
-import { ActionPanel, List, showToast, Toast } from "@raycast/api";
+import { ActionPanel, Icon, List, showToast, Toast } from "@raycast/api";
 import { Enhet } from "../types";
 import { formatAddress } from "../utils/format";
 import { canMoveUp, canMoveDown } from "../utils/entity";
@@ -59,13 +59,13 @@ export default function FavoritesList({
             key={`fav-${entity.organisasjonsnummer}`}
             title={entity.navn}
             subtitle={entity.organisasjonsnummer}
-            icon={entity.emoji ? entity.emoji : entity.faviconUrl ? entity.faviconUrl : "Icon.Globe"}
+            icon={entity.emoji ? entity.emoji : entity.faviconUrl ? entity.faviconUrl : Icon.Globe}
             accessories={[
               ...(addressString ? [{ text: addressString }] : []),
               ...(showMoveIndicators && canMoveUpFlag
                 ? [
                     {
-                      icon: "Icon.ArrowUp",
+                      icon: Icon.ArrowUp,
                       text: "Move up",
                       tooltip: "⌘⇧↑ to move up",
                     },
@@ -74,7 +74,7 @@ export default function FavoritesList({
               ...(showMoveIndicators && canMoveDownFlag
                 ? [
                     {
-                      icon: "Icon.ArrowDown",
+                      icon: Icon.ArrowDown,
                       text: "Move down",
                       tooltip: "⌘⇧↓ to move down",
                     },
@@ -98,6 +98,8 @@ export default function FavoritesList({
                 <FavoriteActions
                   entity={entity}
                   index={index}
+                  canMoveUp={canMoveUpFlag}
+                  canMoveDown={canMoveDownFlag}
                   showMoveIndicators={showMoveIndicators}
                   onRemoveFavorite={onRemoveFavorite}
                   onUpdateEmoji={onUpdateEmoji}

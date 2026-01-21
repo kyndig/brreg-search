@@ -6,19 +6,17 @@ import WelcomeView from "./components/WelcomeView";
 import KeyboardShortcutsHelp from "./components/KeyboardShortcutsHelp";
 import { useFavorites } from "./hooks/useFavorites";
 import { useSearch } from "./hooks/useSearch";
-import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { useCompanyView } from "./hooks/useCompanyView";
 import { useSettings } from "./hooks/useSettings";
 
 export default function SearchAndCopyCommand() {
   const favoritesResult = useFavorites();
   const searchResult = useSearch();
-  const keyboardResult = useKeyboardShortcuts();
   const companyViewResult = useCompanyView();
   const settingsResult = useSettings();
 
   // Guard against undefined hook results
-  if (!favoritesResult || !searchResult || !keyboardResult || !companyViewResult || !settingsResult) {
+  if (!favoritesResult || !searchResult || !companyViewResult || !settingsResult) {
     return (
       <List isLoading={true}>
         <List.Section title="Loading">
@@ -30,7 +28,6 @@ export default function SearchAndCopyCommand() {
 
   // Now safe to destructure all hooks
   const { entities, isLoading, setSearchText, trimmed } = searchResult;
-  const { showMoveIndicators: keyboardMoveIndicators } = keyboardResult;
   const { currentCompany, isLoadingDetails, isCompanyViewOpen, handleViewDetails, closeCompanyView } =
     companyViewResult;
 
@@ -50,10 +47,8 @@ export default function SearchAndCopyCommand() {
     moveFavoriteUp,
     moveFavoriteDown,
     toggleMoveMode,
+    showMoveIndicators,
   } = favoritesResult;
-
-  // Use the keyboard shortcuts from the hook
-  const showMoveIndicators = keyboardMoveIndicators;
 
   if (isCompanyViewOpen) {
     const orgNumber = currentCompany!.organizationNumber;

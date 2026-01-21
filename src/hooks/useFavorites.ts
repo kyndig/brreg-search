@@ -27,34 +27,71 @@ export function useFavorites() {
   }, [favoritesList]);
 
   // Favorites enrichment logic
-  const hasEnrichedRef = useRef(false);
+  const isEnrichingRef = useRef(false);
+  const enrichmentCacheRef = useRef(new Map<string, { website?: string; faviconUrl?: string }>());
   useEffect(() => {
-    if (isLoadingFavorites || hasEnrichedRef.current || favoritesList.length === 0) return;
+    if (isLoadingFavorites || favoritesList.length === 0 || isEnrichingRef.current) return;
 
     const needsEnrichment = favoritesList.some((f) => !f.faviconUrl);
-    if (!needsEnrichment) {
-      hasEnrichedRef.current = true;
-      return;
+    if (!needsEnrichment) return;
+
+    let cancelled = false;
+    isEnrichingRef.current = true;
+
+    async function mapWithConcurrency<T, R>(
+      items: T[],
+      limit: number,
+      mapper: (item: T) => Promise<R>,
+    ): Promise<R[]> {
+      const results = new Array<R>(items.length);
+      let nextIndex = 0;
+
+      const worker = async () => {
+        while (true) {
+          const current = nextIndex;
+          nextIndex += 1;
+          if (current >= items.length) return;
+          results[current] = await mapper(items[current]);
+        }
+      };
+
+      const workers = Array.from({ length: Math.min(limit, items.length) }, () => worker());
+      await Promise.all(workers);
+      return results;
     }
 
-    hasEnrichedRef.current = true;
-
     (async () => {
-      const updated = await Promise.all(
-        favoritesList.map(async (f) => {
-          if (f.faviconUrl) return f;
-          try {
-            const details = await getCompanyDetails(f.organisasjonsnummer);
-            const website = details?.website || f.website;
-            const faviconUrl = website ? getFavicon(website) : undefined;
-            return { ...f, website, faviconUrl } as Enhet;
-          } catch {
-            return f;
-          }
-        }),
-      );
-      setFavorites(updated);
-    })();
+      const limit = 3;
+
+      const updated = await mapWithConcurrency(favoritesList, limit, async (f) => {
+        if (f.faviconUrl) return f;
+
+        const cached = enrichmentCacheRef.current.get(f.organisasjonsnummer);
+        if (cached?.faviconUrl || cached?.website) {
+          return { ...f, website: cached.website ?? f.website, faviconUrl: cached.faviconUrl ?? f.faviconUrl } as Enhet;
+        }
+
+        try {
+          const details = await getCompanyDetails(f.organisasjonsnummer);
+          const website = details?.website || f.website;
+          const faviconUrl = website ? getFavicon(website) : undefined;
+          enrichmentCacheRef.current.set(f.organisasjonsnummer, { website, faviconUrl });
+          return { ...f, website, faviconUrl } as Enhet;
+        } catch {
+          return f;
+        }
+      });
+
+      if (!cancelled) {
+        setFavorites(updated);
+      }
+    })().finally(() => {
+      isEnrichingRef.current = false;
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [isLoadingFavorites, favoritesList, setFavorites]);
 
   // Favorites management functions

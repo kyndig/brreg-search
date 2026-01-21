@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { Enhet } from "../types";
+import { Icon } from "@raycast/api";
 
 export function useMemoizedActions() {
   // Memoize the favorite IDs set for O(1) lookups
@@ -22,7 +23,7 @@ export function useMemoizedActions() {
 
     if (index > 0) {
       indicators.push({
-        icon: "Icon.ArrowUp",
+        icon: Icon.ArrowUp,
         text: "Move up",
         tooltip: "⌘⇧↑ to move up",
       });
@@ -30,7 +31,7 @@ export function useMemoizedActions() {
 
     if (index < totalLength - 1) {
       indicators.push({
-        icon: "Icon.ArrowDown",
+        icon: Icon.ArrowDown,
         text: "Move down",
         tooltip: "⌘⇧↓ to move down",
       });

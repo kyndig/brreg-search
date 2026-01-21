@@ -288,7 +288,7 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageDataU
               shortcut={KEYBOARD_SHORTCUTS.REMOVE_FROM_FAVORITES}
             />
           ) : (
-            <Action title="Add to Favorites" onAction={onAddFavorite} shortcut={KEYBOARD_SHORTCUTS.ADD_TO_FAVORITES} />
+            <Action title="⭐ Add to Favorites" onAction={onAddFavorite} shortcut={KEYBOARD_SHORTCUTS.ADD_TO_FAVORITES} />
           )}
           <ActionPanel.Section title="Tabs">
             <Action

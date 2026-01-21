@@ -35,7 +35,7 @@ Search and retrieve information about Norwegian companies (Enhetsregisteret) dir
   - Welcome messages for new users
   - Comprehensive keyboard shortcuts guide
   - Interactive tab navigation
-  - Proff.no integration for additional business information
+  - Proff.no search integration for additional business information
 
 ## Favorites
 

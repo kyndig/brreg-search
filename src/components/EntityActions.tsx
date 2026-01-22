@@ -3,7 +3,7 @@ import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import { Enhet } from "../types";
 import { KEYBOARD_SHORTCUTS } from "../constants";
 import React from "react";
-import { getBregUrl } from "../utils/entity";
+import { formatNorwegianVatNumber, getBregUrl } from "../utils/entity";
 
 /**
  * Props for the EntityActions component
@@ -35,6 +35,11 @@ function EntityActions({
         content={entity.organisasjonsnummer}
         title="Copy Organization Number"
         shortcut={KEYBOARD_SHORTCUTS.COPY_ORG_NUMBER}
+      />
+      <Action.CopyToClipboard
+        content={formatNorwegianVatNumber(entity.organisasjonsnummer)}
+        title="Copy VAT Number"
+        shortcut={KEYBOARD_SHORTCUTS.COPY_VAT_NUMBER}
       />
       {addressString && (
         <Action.CopyToClipboard

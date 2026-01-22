@@ -1,8 +1,9 @@
-import { Detail, ActionPanel, Action, Icon } from "@raycast/api";
+import { Detail, ActionPanel, Action, Clipboard, Icon, showToast, Toast } from "@raycast/api";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import { Company } from "../types";
 import { KEYBOARD_SHORTCUTS } from "../constants";
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { formatNorwegianVatNumber } from "../utils/entity";
 
 const TAB_ORDER = ["overview", "financials", "map"] as const;
 type TabId = (typeof TAB_ORDER)[number];
@@ -34,6 +35,27 @@ export default function CompanyDetailsView({
   const [mapImageUrl, setMapImageUrl] = useState<string | undefined>(undefined);
   const geocodeCacheRef = useMemo(() => new Map<string, { lat: number; lon: number }>(), []);
   const lastGeocodeAtRef = useMemo(() => ({ value: 0 }), []);
+
+  const copyVatNumber = useCallback(async () => {
+    if (!company.organizationNumber) return;
+
+    if (company.isVatRegistered === false) {
+      await showToast({
+        style: Toast.Style.Failure,
+        title: "Not VAT Registered",
+        message: `${company.name} is not registered for VAT`,
+      });
+      return;
+    }
+
+    const vatNumber = formatNorwegianVatNumber(company.organizationNumber);
+    await Clipboard.copy(vatNumber);
+    await showToast({
+      style: Toast.Style.Success,
+      title: "VAT Number Copied",
+      message: vatNumber,
+    });
+  }, [company.isVatRegistered, company.name, company.organizationNumber]);
 
   // Format address manually since we don't have the Enhet format
   const formattedAddress = useMemo(() => {
@@ -283,6 +305,14 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ?
               title="Copy Organization Number"
               content={company.organizationNumber}
               shortcut={KEYBOARD_SHORTCUTS.COPY_ORG_NUMBER}
+            />
+          )}
+          {company.organizationNumber && (
+            <Action
+              title="Copy VAT Number"
+              icon={Icon.Clipboard}
+              onAction={copyVatNumber}
+              shortcut={KEYBOARD_SHORTCUTS.COPY_VAT_NUMBER}
             />
           )}
           {formattedAddress && (

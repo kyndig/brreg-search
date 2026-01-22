@@ -1,8 +1,9 @@
-import { Detail, ActionPanel, Action, Icon } from "@raycast/api";
+import { Detail, ActionPanel, Action, Clipboard, Icon, showToast, Toast } from "@raycast/api";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import { Company } from "../types";
 import { KEYBOARD_SHORTCUTS } from "../constants";
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { formatNorwegianVatNumber } from "../utils/entity";
 
 const TAB_ORDER = ["overview", "financials", "map"] as const;
 type TabId = (typeof TAB_ORDER)[number];
@@ -34,6 +35,32 @@ export default function CompanyDetailsView({
   const [mapImageUrl, setMapImageUrl] = useState<string | undefined>(undefined);
   const geocodeCacheRef = useMemo(() => new Map<string, { lat: number; lon: number }>(), []);
   const lastGeocodeAtRef = useMemo(() => ({ value: 0 }), []);
+
+  const copyVatNumber = useCallback(async () => {
+    if (!company.organizationNumber) return;
+
+    if (company.isVatRegistered !== true) {
+      const title = company.isVatRegistered === false ? "Not VAT Registered" : "VAT Status Unknown";
+      const message =
+        company.isVatRegistered === false
+          ? `${company.name} is not registered for VAT`
+          : `VAT registration status for ${company.name} is unknown`;
+      await showToast({
+        style: Toast.Style.Failure,
+        title,
+        message,
+      });
+      return;
+    }
+
+    const vatNumber = formatNorwegianVatNumber(company.organizationNumber);
+    await Clipboard.copy(vatNumber);
+    await showToast({
+      style: Toast.Style.Success,
+      title: "VAT Number Copied",
+      message: vatNumber,
+    });
+  }, [company.isVatRegistered, company.name, company.organizationNumber]);
 
   // Format address manually since we don't have the Enhet format
   const formattedAddress = useMemo(() => {
@@ -67,7 +94,9 @@ export default function CompanyDetailsView({
           const n = Math.pow(2, zoom);
           const xTile = Math.floor(((cached.lon + 180) / 360) * n);
           const yTile = Math.floor(
-            ((1 - Math.log(Math.tan((cached.lat * Math.PI) / 180) + 1 / Math.cos((cached.lat * Math.PI) / 180)) / Math.PI) / 2) *
+            ((1 -
+              Math.log(Math.tan((cached.lat * Math.PI) / 180) + 1 / Math.cos((cached.lat * Math.PI) / 180)) / Math.PI) /
+              2) *
               n,
           );
           const url = `https://tile.openstreetmap.org/${zoom}/${xTile}/${yTile}.png`;
@@ -285,6 +314,14 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ?
               shortcut={KEYBOARD_SHORTCUTS.COPY_ORG_NUMBER}
             />
           )}
+          {company.organizationNumber && (
+            <Action
+              title="Copy Vat Number"
+              icon={Icon.Clipboard}
+              onAction={copyVatNumber}
+              shortcut={KEYBOARD_SHORTCUTS.COPY_VAT_NUMBER}
+            />
+          )}
           {formattedAddress && (
             <Action.CopyToClipboard
               title="Copy Business Address"
@@ -313,7 +350,11 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ?
               shortcut={KEYBOARD_SHORTCUTS.REMOVE_FROM_FAVORITES}
             />
           ) : (
-            <Action title="⭐ Add to Favorites" onAction={onAddFavorite} shortcut={KEYBOARD_SHORTCUTS.ADD_TO_FAVORITES} />
+            <Action
+              title="⭐ Add to Favorites"
+              onAction={onAddFavorite}
+              shortcut={KEYBOARD_SHORTCUTS.ADD_TO_FAVORITES}
+            />
           )}
           <ActionPanel.Section title="Tabs">
             <Action

@@ -74,3 +74,28 @@ export function getMoveIndicators(
 
   return indicators;
 }
+
+/**
+ * Normalize VAT registration status across different entity shapes.
+ *
+ * - `Company` uses `isVatRegistered`
+ * - BRREG entities may provide `mvaRegistrert` or `registrertIMvaregisteret`
+ */
+export function getVatRegistrationStatus(entity: {
+  isVatRegistered?: boolean;
+  mvaRegistrert?: boolean;
+  registrertIMvaregisteret?: boolean;
+}): boolean | undefined {
+  if (typeof entity.isVatRegistered === "boolean") return entity.isVatRegistered;
+  if (typeof entity.mvaRegistrert === "boolean") return entity.mvaRegistrert;
+  if (typeof entity.registrertIMvaregisteret === "boolean") return entity.registrertIMvaregisteret;
+  return undefined;
+}
+
+/**
+ * Format Norwegian organization number as VAT number (NO {orgnr} MVA)
+ */
+export function formatNorwegianVatNumber(orgNumber: string): string {
+  const trimmed = orgNumber.trim().replace(/\s+/g, "");
+  return `NO ${trimmed} MVA`;
+}

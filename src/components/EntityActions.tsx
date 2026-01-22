@@ -1,9 +1,9 @@
-import { Action, Icon } from "@raycast/api";
+import { Action, Clipboard, Icon, showToast, Toast } from "@raycast/api";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import { Enhet } from "../types";
 import { KEYBOARD_SHORTCUTS } from "../constants";
 import React from "react";
-import { getBregUrl } from "../utils/entity";
+import { formatNorwegianVatNumber, getBregUrl, getVatRegistrationStatus } from "../utils/entity";
 
 /**
  * Props for the EntityActions component
@@ -21,12 +21,33 @@ interface EntityActionsProps {
  * EntityActions component provides common actions for any entity
  * including view details, copy to clipboard, and open in browser
  */
-function EntityActions({
-  entity,
-  addressString,
-  onViewDetails,
-}: EntityActionsProps) {
+function EntityActions({ entity, addressString, onViewDetails }: EntityActionsProps) {
   const bregUrl = getBregUrl(entity.organisasjonsnummer);
+
+  const copyVatNumber = async () => {
+    const isVatRegistered = getVatRegistrationStatus(entity);
+    if (isVatRegistered !== true) {
+      const title = isVatRegistered === false ? "Not VAT Registered" : "VAT Status Unknown";
+      const message =
+        isVatRegistered === false
+          ? `${entity.navn} is not registered for VAT`
+          : `VAT registration status for ${entity.navn} is unknown`;
+      await showToast({
+        style: Toast.Style.Failure,
+        title,
+        message,
+      });
+      return;
+    }
+
+    const vatNumber = formatNorwegianVatNumber(entity.organisasjonsnummer);
+    await Clipboard.copy(vatNumber);
+    await showToast({
+      style: Toast.Style.Success,
+      title: "VAT Number Copied",
+      message: vatNumber,
+    });
+  };
 
   return (
     <>
@@ -35,6 +56,12 @@ function EntityActions({
         content={entity.organisasjonsnummer}
         title="Copy Organization Number"
         shortcut={KEYBOARD_SHORTCUTS.COPY_ORG_NUMBER}
+      />
+      <Action
+        title="Copy Vat Number"
+        icon={Icon.Clipboard}
+        onAction={copyVatNumber}
+        shortcut={KEYBOARD_SHORTCUTS.COPY_VAT_NUMBER}
       />
       {addressString && (
         <Action.CopyToClipboard

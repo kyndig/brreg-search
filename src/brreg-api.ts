@@ -1,6 +1,6 @@
 import { Company, Enhet } from "./types";
 import type { FinancialYear } from "./types";
-import { getBregUrl } from "./utils/entity";
+import { getBregUrl, getVatRegistrationStatus } from "./utils/entity";
 
 const BASE_URL = "https://data.brreg.no/enhetsregisteret/api";
 
@@ -72,12 +72,7 @@ function createCompanyFromBrregEntity(entity: BrregEntity): Company {
     ? getBregUrl(cleanOrgNumber)
     : `https://www.brreg.no/sok?q=${encodeURIComponent(name)}`;
 
-  const isVatRegistered =
-    typeof entity.mvaRegistrert === "boolean"
-      ? entity.mvaRegistrert
-      : typeof entity.registrertIMvaregisteret === "boolean"
-        ? entity.registrertIMvaregisteret
-        : undefined;
+  const isVatRegistered = getVatRegistrationStatus(entity);
 
   return {
     name,

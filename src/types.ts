@@ -50,6 +50,12 @@ export interface SearchResult {
 export interface Enhet {
   organisasjonsnummer: string;
   navn: string;
+  /**
+   * VAT registration flags as returned by BRREG Enhetsregisteret.
+   * Either field may be present depending on endpoint/version.
+   */
+  mvaRegistrert?: boolean;
+  registrertIMvaregisteret?: boolean;
   forretningsadresse?: {
     land?: string;
     landkode?: string;

@@ -74,7 +74,7 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
         description: "Copy organization number to clipboard",
       },
       {
-        action: "Copy VAT Number",
+        action: "Copy Vat Number",
         shortcut: "⌘⇧V",
         description: "Copy Norwegian VAT number (NO {orgnr} MVA) to clipboard",
       },

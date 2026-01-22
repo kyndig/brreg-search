@@ -38,7 +38,7 @@ function EntityActions({
       />
       <Action.CopyToClipboard
         content={formatNorwegianVatNumber(entity.organisasjonsnummer)}
-        title="Copy VAT Number"
+        title="Copy Vat Number"
         shortcut={KEYBOARD_SHORTCUTS.COPY_VAT_NUMBER}
       />
       {addressString && (

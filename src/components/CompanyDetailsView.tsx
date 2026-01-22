@@ -39,11 +39,16 @@ export default function CompanyDetailsView({
   const copyVatNumber = useCallback(async () => {
     if (!company.organizationNumber) return;
 
-    if (company.isVatRegistered === false) {
+    if (company.isVatRegistered !== true) {
+      const title = company.isVatRegistered === false ? "Not VAT Registered" : "VAT Status Unknown";
+      const message =
+        company.isVatRegistered === false
+          ? `${company.name} is not registered for VAT`
+          : `VAT registration status for ${company.name} is unknown`;
       await showToast({
         style: Toast.Style.Failure,
-        title: "Not VAT Registered",
-        message: `${company.name} is not registered for VAT`,
+        title,
+        message,
       });
       return;
     }
@@ -309,7 +314,7 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ?
           )}
           {company.organizationNumber && (
             <Action
-              title="Copy VAT Number"
+              title="Copy Vat Number"
               icon={Icon.Clipboard}
               onAction={copyVatNumber}
               shortcut={KEYBOARD_SHORTCUTS.COPY_VAT_NUMBER}

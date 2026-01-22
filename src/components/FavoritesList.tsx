@@ -68,7 +68,6 @@ export default function FavoritesList({
                 />
                 <FavoriteActions
                   entity={entity}
-                  index={index}
                   canMoveUp={canMoveUpFlag}
                   canMoveDown={canMoveDownFlag}
                   showMoveIndicators={showMoveIndicators}

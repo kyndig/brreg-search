@@ -11,8 +11,6 @@ import React from "react";
 interface FavoriteActionsProps {
   /** The favorite entity to display actions for */
   entity: Enhet;
-  /** The index of this favorite in the list */
-  index: number;
   /** Whether this favorite can be moved up */
   canMoveUp: boolean;
   /** Whether this favorite can be moved down */
@@ -41,7 +39,6 @@ interface FavoriteActionsProps {
  */
 function FavoriteActions({
   entity,
-  index,
   canMoveUp,
   canMoveDown,
   showMoveIndicators,

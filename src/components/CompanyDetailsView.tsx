@@ -94,7 +94,9 @@ export default function CompanyDetailsView({
           const n = Math.pow(2, zoom);
           const xTile = Math.floor(((cached.lon + 180) / 360) * n);
           const yTile = Math.floor(
-            ((1 - Math.log(Math.tan((cached.lat * Math.PI) / 180) + 1 / Math.cos((cached.lat * Math.PI) / 180)) / Math.PI) / 2) *
+            ((1 -
+              Math.log(Math.tan((cached.lat * Math.PI) / 180) + 1 / Math.cos((cached.lat * Math.PI) / 180)) / Math.PI) /
+              2) *
               n,
           );
           const url = `https://tile.openstreetmap.org/${zoom}/${xTile}/${yTile}.png`;
@@ -348,7 +350,11 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ?
               shortcut={KEYBOARD_SHORTCUTS.REMOVE_FROM_FAVORITES}
             />
           ) : (
-            <Action title="⭐ Add to Favorites" onAction={onAddFavorite} shortcut={KEYBOARD_SHORTCUTS.ADD_TO_FAVORITES} />
+            <Action
+              title="⭐ Add to Favorites"
+              onAction={onAddFavorite}
+              shortcut={KEYBOARD_SHORTCUTS.ADD_TO_FAVORITES}
+            />
           )}
           <ActionPanel.Section title="Tabs">
             <Action

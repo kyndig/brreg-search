@@ -33,11 +33,7 @@ export default function FavoritesList({
   if (favorites.length === 0) {
     return (
       <List.Section title="Favorites">
-        <List.Item
-          title="No favorites yet"
-          subtitle="Search and ⌘F to add favorites "
-          icon="⭐"
-        />
+        <List.Item title="No favorites yet" subtitle="Search and ⌘F to add favorites " icon="⭐" />
       </List.Section>
     );
   }
@@ -61,11 +57,7 @@ export default function FavoritesList({
             ]}
             actions={
               <ActionPanel>
-                <EntityActions
-                  entity={entity}
-                  addressString={addressString}
-                  onViewDetails={onViewDetails}
-                />
+                <EntityActions entity={entity} addressString={addressString} onViewDetails={onViewDetails} />
                 <FavoriteActions
                   entity={entity}
                   canMoveUp={canMoveUpFlag}

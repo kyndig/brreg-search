@@ -69,11 +69,7 @@ export default function SearchResults({
             accessories={addressString ? [{ text: addressString }] : []}
             actions={
               <ActionPanel>
-                <EntityActions
-                  entity={entity}
-                  addressString={addressString}
-                  onViewDetails={onViewDetails}
-                />
+                <EntityActions entity={entity} addressString={addressString} onViewDetails={onViewDetails} />
                 <SearchResultActions
                   entity={entity}
                   isFavorite={alreadyFavorite}

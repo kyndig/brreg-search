@@ -4,6 +4,15 @@ import { Company } from "../types";
 import { KEYBOARD_SHORTCUTS } from "../constants";
 import { useState, useEffect, useMemo, useCallback } from "react";
 
+const TAB_ORDER = ["overview", "financials", "map"] as const;
+type TabId = (typeof TAB_ORDER)[number];
+
+const TABS = [
+  { id: "overview", title: "Overview" },
+  { id: "financials", title: "Financials" },
+  { id: "map", title: "Map" },
+] as const satisfies ReadonlyArray<{ id: TabId; title: string }>;
+
 interface CompanyDetailsViewProps {
   company: Company;
   isLoading: boolean;
@@ -21,7 +30,7 @@ export default function CompanyDetailsView({
   onAddFavorite,
   onRemoveFavorite,
 }: CompanyDetailsViewProps) {
-  const [activeTab, setActiveTab] = useState<"overview" | "financials" | "map">("overview");
+  const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [mapImageUrl, setMapImageUrl] = useState<string | undefined>(undefined);
   const geocodeCacheRef = useMemo(() => new Map<string, { lat: number; lon: number }>(), []);
   const lastGeocodeAtRef = useMemo(() => ({ value: 0 }), []);
@@ -35,18 +44,11 @@ export default function CompanyDetailsView({
     return addressParts.join(", ");
   }, [company.address, company.postalCode, company.city]);
 
-  const tabOrder: Array<"overview" | "financials" | "map"> = ["overview", "financials", "map"];
   const goToPreviousTab = useCallback(() => {
-    const currentIndex = tabOrder.indexOf(activeTab);
-    const previousIndex = (currentIndex - 1 + tabOrder.length) % tabOrder.length;
-    setActiveTab(tabOrder[previousIndex]);
-  }, [activeTab, tabOrder]);
-
-  const tabs = [
-    { id: "overview", title: "Overview" },
-    { id: "financials", title: "Financials" },
-    { id: "map", title: "Map" },
-  ] as const;
+    const currentIndex = TAB_ORDER.indexOf(activeTab);
+    const previousIndex = (currentIndex - 1 + TAB_ORDER.length) % TAB_ORDER.length;
+    setActiveTab(TAB_ORDER[previousIndex]);
+  }, [activeTab]);
 
   // Map functionality
   useEffect(() => {
@@ -110,15 +112,13 @@ export default function CompanyDetailsView({
   }, [activeTab, formattedAddress, mapImageUrl, geocodeCacheRef, lastGeocodeAtRef]);
 
   const tabsHeader = useMemo(() => {
-    return tabs
-      .map((t) => {
-        const isActive = t.id === activeTab;
-        const bullet = isActive ? "●" : "○";
-        const label = isActive ? `**${t.title}**` : t.title;
-        return `${bullet} ${label}`;
-      })
-      .join("   ");
-  }, [activeTab, tabs]);
+    return TABS.map((t) => {
+      const isActive = t.id === activeTab;
+      const bullet = isActive ? "●" : "○";
+      const label = isActive ? `**${t.title}**` : t.title;
+      return `${bullet} ${label}`;
+    }).join("   ");
+  }, [activeTab]);
 
   const markdown = useMemo(() => {
     if (activeTab === "overview") {

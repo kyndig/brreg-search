@@ -1,70 +1,69 @@
 # BRREG Search Changelog
 
-## Version 2.0.3 – Updated readme {PR_MERGE_DATE}
-- Nothing big, just an absent-minded dev
+## [Documentation Update] [2.0.3] - [PR_MERGE_DATE]
+- Updated README to accurately reflect current functionality
+- Removed documentation for non-existent features
+- Added explicit privacy and networking section
+- Normalised changelog format
 
-## Version 2.0.2 – New keyboard shortcuts for financial data 2025-08-25
+## [Keyboard Shortcuts for Financial Data] [2.0.2] - 2025-08-25
 - Added keyboard shortcuts for copying revenue (⌘⇧R) and net result (⌘⇧N)
-- Refactored all keyboard shortcuts to use centralized constants for better maintainability
+- Refactored all keyboard shortcuts to use centralised constants for better maintainability
 
-## [Version 2.0.1 – Minor updates and typography fixes] - 2025-08-25
+## [Minor Updates and Typography Fixes] [2.0.1] - 2025-08-25
 - Updated Welcome message
 - Added Keyboard Shortcuts to the Welcome screen and made it available from all views
-- Companies can now be added (⌘F) or removed (⌘⇧F) from Favorites, including from the Detail view
-- Favorites are hidden while typing; only search results show once you start typing
-- Added a visual metadata tag indicating whether a company is in the Favorites list or not
-- Simplified Favorites empty state copy
+- Companies can now be added (⌘F) or removed (⌘⇧F) from Favourites, including from the Detail view
+- Favourites are hidden while typing; only search results show once you start typing
+- Added a visual metadata tag indicating whether a company is in the Favourites list or not
+- Simplified Favourites empty state copy
 - Added link to GitHub for feedback and feature requests
-- Removed uncessecary settings view
+- Removed unnecessary settings view
 - Fixed some links not working as intended
 
-## [Version 2.0.0 - Major Refactoring & Enhancement Release] - 2025-08-19
-🚀 **What's New?**
+## [Major Refactoring & Enhancement Release] [2.0.0] - 2025-08-19
 
-### ✨ **Enhanced User Experience**
-- **Welcome Messages**: Helpful onboarding for new users with no favorites
-- **User Settings**: Customizable preferences including welcome message display and performance monitoring
+### Enhanced User Experience
+- **Welcome Messages**: Helpful onboarding for new users with no favourites
 - **Keyboard Shortcuts Help**: Comprehensive guide accessible from the welcome section
-- **Improved Empty States**: Better guidance when no favorites or search results exist
+- **Improved Empty States**: Better guidance when no favourites or search results exist
 
-### 🏗️ **Architecture Improvements**
+### Architecture Improvements
 - **Component Extraction**: Broke down monolithic component into focused, reusable pieces
-- **Custom Hooks**: Extracted business logic into specialized hooks for better maintainability
+- **Custom Hooks**: Extracted business logic into specialised hooks for better maintainability
 - **Zero Code Duplication**: Eliminated all redundant action code with shared components
-- **Performance Optimization**: React.memo implementation and optimized data structures
+- **Performance Optimisation**: React.memo implementation and optimised data structures
 
-### 🎨 **New Components**
+### New Components
 - **EntityActions**: Common actions for all entities (view, copy, open in browser)
-- **FavoriteActions**: Specialized actions for favorites (emoji, reorder, remove)
+- **FavoriteActions**: Specialised actions for favourites (emoji, reorder, remove)
 - **SearchResultActions**: Conditional actions for search results
-- **SettingsView**: User preferences management interface
 - **KeyboardShortcutsHelp**: Comprehensive shortcuts reference
 - **ErrorBoundary**: Robust error handling with graceful fallbacks
 
-### 🔧 **Technical Enhancements**
+### Technical Enhancements
 - **Type Safety**: 100% TypeScript coverage with strict typing
 - **Error Handling**: Comprehensive error boundaries and user feedback
-- **Performance Monitoring**: Development tools for component performance tracking
-- **Constants Management**: Centralized configuration for easy maintenance
+- **Constants Management**: Centralised configuration for easy maintenance
 - **Dependency Cleanup**: Removed unused Google Static Maps API key requirement
 
-## [Version 1.1.0 - Initial Enhancement Release] – 2025-08-19
+## [Initial Enhancement Release] [1.1.0] - 2025-08-19
 
-♻️ **What's Changed:**
+### What's Changed
 - Corrected the English name of Brønnøysundregistrene to the official translation (The Brønnøysund Register Centre).
 
-⭐ **What's New:**
-- Favorite entities to keep your most-used companies and organisations at your fingertips
+### What's New
+- Favourite entities to keep your most-used companies and organisations at your fingertips
 - Basic search functionality for Norwegian companies
 - Company details view with financial information
 - Map integration for company locations
 
-## [Version 1.0.0 - Initial Release] - 2025-02-25
+## [Initial Release] [1.0.0] - 2025-02-25
 
-🎯 **Core Features:**
-- Search Norwegian companies by name or organization number
+### Core Features
+- Search Norwegian companies by name or organisation number
 - View company details and financial information
 - Copy company data to clipboard
 - Open companies in Brønnøysundregistrene website
 
-Made with 🫶 by [kynd](https://www.kynd.no) 
+Made with 🫶 by [kynd](https://www.kynd.no)

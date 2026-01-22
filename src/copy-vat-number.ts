@@ -35,10 +35,15 @@ export default async function Command({ arguments: { organizationNumber } }: { a
     }
 
     if (company.isVatRegistered !== true) {
+      const title = company.isVatRegistered === false ? "Not VAT Registered" : "VAT Status Unknown";
+      const message =
+        company.isVatRegistered === false
+          ? `Company ${company.name} is not registered for VAT`
+          : `VAT registration status for ${company.name} is unknown`;
       await showToast({
         style: Toast.Style.Failure,
-        title: "Not VAT Registered",
-        message: `Company ${company.name} is not registered for VAT`,
+        title,
+        message,
       });
       return;
     }

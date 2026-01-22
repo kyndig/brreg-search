@@ -9,7 +9,8 @@ export const API_CONFIG = {
 
 // Keyboard Shortcuts
 export const KEYBOARD_SHORTCUTS: Record<string, Keyboard.Shortcut> = {
-  COPY_ORG_NUMBER: { modifiers: ["cmd"], key: "o" },
+  COPY_ORG_NUMBER: { modifiers: ["cmd", "shift"], key: "c" },
+  COPY_VAT_NUMBER: { modifiers: ["cmd", "shift"], key: "v" },
   COPY_ADDRESS: { modifiers: ["cmd"], key: "b" },
   COPY_REVENUE: { modifiers: ["cmd", "shift"], key: "r" },
   COPY_NET_RESULT: { modifiers: ["cmd", "shift"], key: "n" },

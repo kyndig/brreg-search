@@ -29,9 +29,7 @@ export function useFavorites() {
 
   // Favorites enrichment logic
   const isEnrichingRef = useRef(false);
-  const enrichmentCacheRef = useRef(
-    new Map<string, { website?: string; faviconUrl?: Image.ImageLike }>(),
-  );
+  const enrichmentCacheRef = useRef(new Map<string, { website?: string; faviconUrl?: Image.ImageLike }>());
   useEffect(() => {
     if (isLoadingFavorites || favoritesList.length === 0 || isEnrichingRef.current) return;
 
@@ -44,16 +42,12 @@ export function useFavorites() {
     let cancelled = false;
     isEnrichingRef.current = true;
 
-    async function mapWithConcurrency<T, R>(
-      items: T[],
-      limit: number,
-      mapper: (item: T) => Promise<R>,
-    ): Promise<R[]> {
+    async function mapWithConcurrency<T, R>(items: T[], limit: number, mapper: (item: T) => Promise<R>): Promise<R[]> {
       const results = new Array<R>(items.length);
       let nextIndex = 0;
 
       const worker = async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        // eslint-disable-next-line no-constant-condition
         while (true) {
           const current = nextIndex;
           nextIndex += 1;

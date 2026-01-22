@@ -1,0 +1,48 @@
+name: Raycast CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions: read-all
+
+jobs:
+  verify:
+    runs-on: macos-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Verify Raycast Store metadata basics
+        run: |
+          node -e "const fs=require('fs'); const pkg=JSON.parse(fs.readFileSync('package.json','utf8')); if(pkg.license!=='MIT'){console.error('Expected package.json license to be MIT, got: '+pkg.license); process.exit(1);} if(!pkg.author||typeof pkg.author!=='string'){console.error('Expected package.json author to be a non-empty string (your Raycast username).'); process.exit(1);} if(!fs.existsSync('package-lock.json')){console.error('Expected package-lock.json to exist (Raycast requires npm + lockfile).'); process.exit(1);} console.log('OK');"
+
+      - name: Ensure Raycast migrations are applied
+        run: |
+          npx @raycast/migration@latest .
+
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Raycast migrations produced changes. Please run 'npx @raycast/migration@latest .' locally and commit the result."
+            git status --porcelain
+            git diff
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Raycast lint (Store requirement)
+        run: npx ray lint
+
+      - name: Raycast build export (Store requirement)
+        run: npx ray build -e dist

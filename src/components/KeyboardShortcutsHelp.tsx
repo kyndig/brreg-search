@@ -1,4 +1,4 @@
-import { List, ActionPanel, Action } from "@raycast/api";
+import { List, ActionPanel, Action, useNavigation } from "@raycast/api";
 
 interface ShortcutGroup {
   title: string;
@@ -34,7 +34,7 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
     title: "Favorites Management",
     shortcuts: [
       {
-        action: "Add to Favorites",
+        action: "⭐ Add to Favorites",
         shortcut: "⌘F",
         description: "Add company to favorites",
       },
@@ -113,11 +113,13 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
 ];
 
 export default function KeyboardShortcutsHelp() {
+  const { pop } = useNavigation();
+
   return (
     <List
       actions={
         <ActionPanel>
-          <Action title="Back" onAction={() => {}} />
+          <Action title="Back" onAction={pop} />
         </ActionPanel>
       }
     >

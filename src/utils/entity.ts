@@ -1,5 +1,6 @@
 import { Enhet } from "../types";
 import type { Image } from "@raycast/api";
+import { Icon } from "@raycast/api";
 
 /**
  * Get the display icon for an entity, prioritizing emoji over favicon
@@ -50,14 +51,14 @@ export function getMoveIndicators(
   index: number,
   totalLength: number,
   showMoveIndicators: boolean,
-): Array<{ icon: string; text: string; tooltip: string }> {
+): Array<{ icon: Image.ImageLike; text: string; tooltip: string }> {
   if (!showMoveIndicators) return [];
 
   const indicators = [];
 
   if (canMoveUp(index)) {
     indicators.push({
-      icon: "Icon.ArrowUp",
+      icon: Icon.ArrowUp,
       text: "Move up",
       tooltip: "⌘⇧↑ to move up",
     });
@@ -65,7 +66,7 @@ export function getMoveIndicators(
 
   if (canMoveDown(index, totalLength)) {
     indicators.push({
-      icon: "Icon.ArrowDown",
+      icon: Icon.ArrowDown,
       text: "Move down",
       tooltip: "⌘⇧↓ to move down",
     });

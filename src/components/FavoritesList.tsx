@@ -1,7 +1,7 @@
-import { ActionPanel, List, showToast, Toast } from "@raycast/api";
+import { ActionPanel, Icon, List } from "@raycast/api";
 import { Enhet } from "../types";
 import { formatAddress } from "../utils/format";
-import { canMoveUp, canMoveDown } from "../utils/entity";
+import { canMoveUp, canMoveDown, getMoveIndicators } from "../utils/entity";
 import EntityActions from "./EntityActions";
 import FavoriteActions from "./FavoriteActions";
 
@@ -37,11 +37,6 @@ export default function FavoritesList({
           title="No favorites yet"
           subtitle="Search and ⌘F to add favorites "
           icon="⭐"
-          // accessories={[
-          //   { text: "Search above to find companies" },
-          //   { text: "Use ⌘F to add to favorites" },
-          //   { text: "Organize with custom emojis" },
-          // ]}
         />
       </List.Section>
     );
@@ -59,27 +54,10 @@ export default function FavoritesList({
             key={`fav-${entity.organisasjonsnummer}`}
             title={entity.navn}
             subtitle={entity.organisasjonsnummer}
-            icon={entity.emoji ? entity.emoji : entity.faviconUrl ? entity.faviconUrl : "Icon.Globe"}
+            icon={entity.emoji ? entity.emoji : entity.faviconUrl ? entity.faviconUrl : Icon.Globe}
             accessories={[
               ...(addressString ? [{ text: addressString }] : []),
-              ...(showMoveIndicators && canMoveUpFlag
-                ? [
-                    {
-                      icon: "Icon.ArrowUp",
-                      text: "Move up",
-                      tooltip: "⌘⇧↑ to move up",
-                    },
-                  ]
-                : []),
-              ...(showMoveIndicators && canMoveDownFlag
-                ? [
-                    {
-                      icon: "Icon.ArrowDown",
-                      text: "Move down",
-                      tooltip: "⌘⇧↓ to move down",
-                    },
-                  ]
-                : []),
+              ...getMoveIndicators(index, favorites.length, showMoveIndicators),
             ]}
             actions={
               <ActionPanel>
@@ -87,17 +65,11 @@ export default function FavoritesList({
                   entity={entity}
                   addressString={addressString}
                   onViewDetails={onViewDetails}
-                  onCopyOrgNumber={() => {
-                    // Show success toast - clipboard is handled by Action.CopyToClipboard
-                  }}
-                  onCopyAddress={() => {
-                    // Show success toast - clipboard is handled by Action.CopyToClipboard
-                  }}
-                  onOpenInBrowser={() => showToast(Toast.Style.Success, "Opening in browser")}
                 />
                 <FavoriteActions
                   entity={entity}
-                  index={index}
+                  canMoveUp={canMoveUpFlag}
+                  canMoveDown={canMoveDownFlag}
                   showMoveIndicators={showMoveIndicators}
                   onRemoveFavorite={onRemoveFavorite}
                   onUpdateEmoji={onUpdateEmoji}

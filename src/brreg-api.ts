@@ -1,6 +1,6 @@
-import fetch from "node-fetch";
 import { Company, Enhet } from "./types";
 import type { FinancialYear } from "./types";
+import { getBregUrl } from "./utils/entity";
 
 const BASE_URL = "https://data.brreg.no/enhetsregisteret/api";
 
@@ -69,7 +69,7 @@ function createCompanyFromBrregEntity(entity: BrregEntity): Company {
 
   const cleanOrgNumber = organizationNumber.replace(/\s+/g, "").trim();
   const bregUrl = cleanOrgNumber
-    ? `https://virksomhet.brreg.no/oppslag/enheter/${cleanOrgNumber}`
+    ? getBregUrl(cleanOrgNumber)
     : `https://www.brreg.no/sok?q=${encodeURIComponent(name)}`;
 
   const isVatRegistered =

@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { showToast, Toast } from "@raycast/api";
+import type { Image } from "@raycast/api";
 import { showFailureToast } from "../utils/toast";
 import { getFavicon, useLocalStorage } from "@raycast/utils";
 import { Enhet } from "../types";
@@ -28,11 +29,16 @@ export function useFavorites() {
 
   // Favorites enrichment logic
   const isEnrichingRef = useRef(false);
-  const enrichmentCacheRef = useRef(new Map<string, { website?: string; faviconUrl?: string }>());
+  const enrichmentCacheRef = useRef(
+    new Map<string, { website?: string; faviconUrl?: Image.ImageLike }>(),
+  );
   useEffect(() => {
     if (isLoadingFavorites || favoritesList.length === 0 || isEnrichingRef.current) return;
 
-    const needsEnrichment = favoritesList.some((f) => !f.faviconUrl);
+    // Only consider favorites that need enrichment AND haven't been attempted yet
+    const needsEnrichment = favoritesList.some(
+      (f) => !f.faviconUrl && !enrichmentCacheRef.current.has(f.organisasjonsnummer),
+    );
     if (!needsEnrichment) return;
 
     let cancelled = false;
@@ -47,6 +53,7 @@ export function useFavorites() {
       let nextIndex = 0;
 
       const worker = async () => {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         while (true) {
           const current = nextIndex;
           nextIndex += 1;
@@ -66,24 +73,39 @@ export function useFavorites() {
       const updated = await mapWithConcurrency(favoritesList, limit, async (f) => {
         if (f.faviconUrl) return f;
 
+        // Check if we've already attempted enrichment for this org number
         const cached = enrichmentCacheRef.current.get(f.organisasjonsnummer);
-        if (cached?.faviconUrl || cached?.website) {
+        if (cached !== undefined) {
+          // Cache entry exists (attempted), use cached values even if undefined
           return { ...f, website: cached.website ?? f.website, faviconUrl: cached.faviconUrl ?? f.faviconUrl } as Enhet;
         }
 
+        // Attempt enrichment and cache the result (even if website/favicon are undefined)
         try {
           const details = await getCompanyDetails(f.organisasjonsnummer);
           const website = details?.website || f.website;
           const faviconUrl = website ? getFavicon(website) : undefined;
+          // Cache the attempt, storing undefined values to prevent re-attempts
           enrichmentCacheRef.current.set(f.organisasjonsnummer, { website, faviconUrl });
           return { ...f, website, faviconUrl } as Enhet;
         } catch {
+          // Cache the failed attempt to prevent retry loops
+          enrichmentCacheRef.current.set(f.organisasjonsnummer, { website: undefined, faviconUrl: undefined });
           return f;
         }
       });
 
       if (!cancelled) {
-        setFavorites(updated);
+        // Only update if something actually changed
+        const originalMap = new Map(favoritesList.map((f) => [f.organisasjonsnummer, f]));
+        const hasChanges = updated.some((u) => {
+          const original = originalMap.get(u.organisasjonsnummer);
+          if (!original) return true; // New favorite
+          return u.website !== original.website || u.faviconUrl !== original.faviconUrl;
+        });
+        if (hasChanges) {
+          setFavorites(updated);
+        }
       }
     })().finally(() => {
       isEnrichingRef.current = false;

@@ -29,10 +29,12 @@ jobs:
 
       - name: Ensure Raycast migrations are applied
         run: |
-          npx @raycast/migration@latest .
+          # @raycast/migration expects the extension path as its first argument.
+          # Use an absolute path to avoid any arg-parsing edge cases in CI.
+          npx -y @raycast/migration@latest "$GITHUB_WORKSPACE"
 
           if [ -n "$(git status --porcelain)" ]; then
-            echo "Raycast migrations produced changes. Please run 'npx @raycast/migration@latest .' locally and commit the result."
+            echo "Raycast migrations produced changes. Please run 'npx -y @raycast/migration@latest .' locally and commit the result."
             git status --porcelain
             git diff
             exit 1

@@ -109,6 +109,7 @@ export async function copyVatNumberToClipboard(
   orgNumber: string,
   name: string,
   vatStatus: boolean | undefined,
+  successMessage?: (vatNumber: string) => string,
 ): Promise<void> {
   if (vatStatus !== true) {
     const title = vatStatus === false ? "Not VAT Registered" : "VAT Status Unknown";
@@ -120,5 +121,9 @@ export async function copyVatNumberToClipboard(
 
   const vatNumber = formatNorwegianVatNumber(orgNumber);
   await Clipboard.copy(vatNumber);
-  await showToast({ style: Toast.Style.Success, title: "VAT Number Copied", message: vatNumber });
+  await showToast({
+    style: Toast.Style.Success,
+    title: "VAT Number Copied",
+    message: successMessage ? successMessage(vatNumber) : vatNumber,
+  });
 }

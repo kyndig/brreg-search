@@ -31,7 +31,12 @@ export default async function Command({ arguments: { organizationNumber } }: { a
       return;
     }
 
-    await copyVatNumberToClipboard(normalized, company.name, company.isVatRegistered);
+    await copyVatNumberToClipboard(
+      normalized,
+      company.name,
+      company.isVatRegistered,
+      (vatNumber) => `${vatNumber} copied to clipboard`,
+    );
   } catch (error) {
     await showToast({
       style: Toast.Style.Failure,

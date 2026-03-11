@@ -13,6 +13,7 @@ Search for Norwegian companies directly from Raycast. View company details, fina
 Type a company name or 9-digit organisation number in the search bar.
 
 **Examples:**
+
 - `Equinor` — search by name
 - `916880286` — search by organisation number (exactly 9 digits)
 - `DNB` — partial name search
@@ -43,25 +44,26 @@ Three tabs:
 
 ## Keyboard Shortcuts
 
-| Action | Shortcut |
-|---|---|
-| View company details | `Enter` |
-| Open in Brønnøysundregistrene | `⌘⇧↵` |
-| Go back | `⌘←` |
-| Add to favourites | `⌘F` |
-| Remove from favourites | `⌘⇧F` |
-| Toggle move mode | `⌘⇧M` |
-| Move favourite up / down | `⌘⇧↑` / `⌘⇧↓` |
-| Copy organisation number | `⌘⇧C` |
-| Copy business address | `⌘⇧B` |
-| Copy revenue | `⌘⇧R` |
-| Copy net result | `⌘⇧N` |
-| Switch tab | `⌘1` / `⌘2` / `⌘3` |
-| Previous tab | `Backspace` |
+| Action                        | Shortcut           |
+| ----------------------------- | ------------------ |
+| View company details          | `Enter`            |
+| Open in Brønnøysundregistrene | `⌘⇧↵`              |
+| Go back                       | `⌘←`               |
+| Add to favourites             | `⌘F`               |
+| Remove from favourites        | `⌘⇧F`              |
+| Toggle move mode              | `⌘⇧M`              |
+| Move favourite up / down      | `⌘⇧↑` / `⌘⇧↓`      |
+| Copy organisation number      | `⌘⇧C`              |
+| Copy business address         | `⌘⇧B`              |
+| Copy revenue                  | `⌘⇧R`              |
+| Copy net result               | `⌘⇧N`              |
+| Switch tab                    | `⌘1` / `⌘2` / `⌘3` |
+| Previous tab                  | `Backspace`        |
 
 ## Privacy & Networking
 
 **External requests:**
+
 - **Brreg API** (`data.brreg.no`): Search queries and organisation numbers
 - **Brreg Regnskapsregisteret** (`data.brreg.no/regnskapsregisteret`): Financial data
 - **Nominatim** (`nominatim.openstreetmap.org`): Geocoding company addresses

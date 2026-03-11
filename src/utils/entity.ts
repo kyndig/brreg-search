@@ -116,7 +116,9 @@ export async function copyVatNumberToClipboard(
     const title = vatStatus === false ? "Not VAT Registered" : "VAT Status Unknown";
     const message =
       vatStatus === false
-        ? (notVatRegisteredMessage ? notVatRegisteredMessage(name) : `${name} is not registered for VAT`)
+        ? notVatRegisteredMessage
+          ? notVatRegisteredMessage(name)
+          : `${name} is not registered for VAT`
         : `VAT registration status for ${name} is unknown`;
     await showToast({ style: Toast.Style.Failure, title, message });
     return;

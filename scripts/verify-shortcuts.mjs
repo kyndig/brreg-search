@@ -22,11 +22,11 @@ assertMatch(
 
 assertMatch(
   constants,
-  /COPY_ADDRESS:\s*\{\s*modifiers:\s*\["cmd"\],\s*key:\s*"b"\s*\}/m,
-  "COPY_ADDRESS must remain cmd+b.",
+  /COPY_ADDRESS:\s*\{\s*modifiers:\s*\["cmd",\s*"shift"\],\s*key:\s*"b"\s*\}/m,
+  "COPY_ADDRESS must remain cmd+shift+b.",
 );
 
 assertMatch(readme, /`⌘⇧C`\s+—\s+Copy organisation number/, "README shortcut for org number is out of sync.");
-assertMatch(readme, /`⌘B`\s+—\s+Copy business address/, "README shortcut for business address is out of sync.");
+assertMatch(readme, /`⌘⇧B`\s+—\s+Copy business address/, "README shortcut for business address is out of sync.");
 
 console.log("Shortcut consistency checks passed.");

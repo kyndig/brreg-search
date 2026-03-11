@@ -22,8 +22,14 @@ const KEY_SYMBOLS: Record<string, string> = {
  * Format a Raycast Keyboard.Shortcut to a human-readable symbol string (e.g. "⌘⇧C").
  */
 export function formatShortcut(shortcut: Keyboard.Shortcut): string {
-  const modifiers = shortcut.modifiers.map((m) => MODIFIER_SYMBOLS[m] ?? m).join("");
-  const key = KEY_SYMBOLS[shortcut.key] ?? shortcut.key.toUpperCase();
+  // Raycast Shortcut can be a union type; narrow before reading key/modifiers.
+  if (!shortcut || typeof shortcut !== "object" || !("key" in shortcut)) {
+    return String(shortcut ?? "");
+  }
+
+  const modifiers = (shortcut.modifiers ?? []).map((m: string) => MODIFIER_SYMBOLS[m] ?? m).join("");
+  const keyValue = String(shortcut.key);
+  const key = KEY_SYMBOLS[keyValue] ?? keyValue.toUpperCase();
   return `${modifiers}${key}`;
 }
 

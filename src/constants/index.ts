@@ -20,11 +20,13 @@ const KEY_SYMBOLS: Record<string, string> = {
 
 /**
  * Format a Raycast Keyboard.Shortcut to a human-readable symbol string (e.g. "⌘⇧C").
+ * Handles both the plain { modifiers, key } variant and the cross-platform { macOS, Windows } variant.
  */
 export function formatShortcut(shortcut: Keyboard.Shortcut): string {
-  const modifiers = shortcut.modifiers.map((m) => MODIFIER_SYMBOLS[m] ?? m).join("");
-  const key = KEY_SYMBOLS[shortcut.key] ?? shortcut.key.toUpperCase();
-  return `${modifiers}${key}`;
+  const { modifiers, key } = "macOS" in shortcut ? shortcut.macOS : shortcut;
+  const mods = modifiers.map((m) => MODIFIER_SYMBOLS[m] ?? m).join("");
+  const k = KEY_SYMBOLS[key] ?? key.toUpperCase();
+  return `${mods}${k}`;
 }
 
 // API Configuration
@@ -33,10 +35,10 @@ export const API_CONFIG = {
 } as const;
 
 // Keyboard Shortcuts
-export const KEYBOARD_SHORTCUTS: Record<string, Keyboard.Shortcut> = {
+export const KEYBOARD_SHORTCUTS = {
   COPY_ORG_NUMBER: { modifiers: ["cmd", "shift"], key: "c" },
   COPY_VAT_NUMBER: { modifiers: ["cmd", "shift"], key: "v" },
-  COPY_ADDRESS: { modifiers: ["cmd"], key: "b" },
+  COPY_ADDRESS: { modifiers: ["cmd", "shift"], key: "b" },
   COPY_REVENUE: { modifiers: ["cmd", "shift"], key: "r" },
   COPY_NET_RESULT: { modifiers: ["cmd", "shift"], key: "n" },
   OPEN_IN_BROWSER: { modifiers: ["cmd", "shift"], key: "enter" },
@@ -50,7 +52,7 @@ export const KEYBOARD_SHORTCUTS: Record<string, Keyboard.Shortcut> = {
   SHOW_MAP: { modifiers: ["cmd"], key: "3" },
   PREVIOUS_TAB: { modifiers: [], key: "backspace" },
   GO_BACK: { modifiers: ["cmd"], key: "arrowLeft" },
-};
+} satisfies Record<string, Keyboard.Shortcut>;
 
 // Emoji Categories
 export const EMOJI_CATEGORIES = [

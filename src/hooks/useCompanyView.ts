@@ -24,7 +24,7 @@ export function useCompanyView() {
     try {
       const details = await getCompanyDetails(entity.organisasjonsnummer);
       setDetailedCompany(details ?? base);
-    } catch (e) {
+    } catch {
       setDetailedCompany(base);
       showFailureToast("Failed to load details");
     }

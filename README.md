@@ -61,7 +61,7 @@ View detailed company information in three tabs:
 
 **Copy actions**
 - `⌘⇧C` — Copy organisation number
-- `⌘B` — Copy business address
+- `⌘⇧B` — Copy business address
 - `⌘⇧R` — Copy revenue
 - `⌘⇧N` — Copy net result
 

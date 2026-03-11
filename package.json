@@ -54,6 +54,8 @@
     "dev": "ray develop",
     "fix-lint": "ray lint --fix",
     "lint": "ray lint",
+    "verify": "npm run type-check && npm run lint && npm run format-check && npm run build && npm run test:unit",
+    "check": "npm install && npm run verify",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:shortcuts": "node scripts/verify-shortcuts.mjs",

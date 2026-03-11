@@ -15,7 +15,6 @@ export function useSearch() {
   const requestIdRef = useRef(0);
 
   const trimmed = searchText.trim();
-  const isNumeric = isAllDigits(trimmed);
 
   useEffect(() => {
     const isNumericQuery = isAllDigits(trimmed);
@@ -53,17 +52,13 @@ export function useSearch() {
       }
     }
 
-    fetchEntities();
+    const debounceTimer = setTimeout(fetchEntities, 300);
 
     return () => {
       cancelled = true;
+      clearTimeout(debounceTimer);
     };
   }, [trimmed]);
-
-  const clearSearch = () => {
-    setSearchText("");
-    setEntities([]);
-  };
 
   return {
     // State
@@ -73,11 +68,9 @@ export function useSearch() {
 
     // Actions
     setSearchText,
-    clearSearch,
 
     // Computed values
     trimmed,
-    isNumeric,
     hasResults: entities.length > 0,
   };
 }

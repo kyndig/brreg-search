@@ -22,8 +22,9 @@ const KEY_SYMBOLS: Record<string, string> = {
  * Format a Raycast Keyboard.Shortcut to a human-readable symbol string (e.g. "⌘⇧C").
  */
 export function formatShortcut(shortcut: Keyboard.Shortcut): string {
-  const modifiers = shortcut.modifiers.map((m) => MODIFIER_SYMBOLS[m] ?? m).join("");
-  const key = KEY_SYMBOLS[shortcut.key] ?? shortcut.key.toUpperCase();
+  const macShortcut = "modifiers" in shortcut ? shortcut : shortcut.macOS;
+  const modifiers = macShortcut.modifiers.map((m: string) => MODIFIER_SYMBOLS[m] ?? m).join("");
+  const key = KEY_SYMBOLS[macShortcut.key] ?? macShortcut.key.toUpperCase();
   return `${modifiers}${key}`;
 }
 
@@ -34,9 +35,9 @@ export const API_CONFIG = {
 
 // Keyboard Shortcuts
 export const KEYBOARD_SHORTCUTS = {
-  COPY_ORG_NUMBER: Keyboard.Shortcut.Common.Copy,
+  COPY_ORG_NUMBER: { modifiers: ["cmd", "shift"], key: "c" },
   COPY_VAT_NUMBER: { modifiers: ["cmd", "shift"], key: "v" },
-  COPY_ADDRESS: { modifiers: ["cmd", "shift"], key: "a" },
+  COPY_ADDRESS: { modifiers: ["cmd"], key: "b" },
   COPY_REVENUE: { modifiers: ["cmd", "shift"], key: "r" },
   COPY_NET_RESULT: { modifiers: ["cmd", "shift"], key: "n" },
   OPEN_IN_BROWSER: { modifiers: ["cmd", "shift"], key: "enter" },

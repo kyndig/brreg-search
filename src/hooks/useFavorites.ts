@@ -113,18 +113,22 @@ export function useFavorites() {
   const addFavorite = async (entity: Enhet) => {
     if (favoriteIds.has(entity.organisasjonsnummer)) return;
 
-    try {
-      const details = await getCompanyDetails(entity.organisasjonsnummer);
-      const website = details?.website;
-      const faviconUrl = website ? getFavicon(website) : undefined;
-      const next = [{ ...entity, website, faviconUrl }, ...favoritesList];
-      setFavorites(next);
-      showToast(Toast.Style.Success, "Added to Favorites", entity.navn);
-    } catch {
-      const nextFallback = [{ ...entity }, ...favoritesList];
-      setFavorites(nextFallback);
-      showToast(Toast.Style.Success, "Added to Favorites", entity.navn);
+    // Use website already on the entity (e.g. from detail view) to avoid a redundant API fetch.
+    // Fall back to fetching company details only when website is unknown.
+    let website = entity.website;
+    if (!website) {
+      try {
+        const details = await getCompanyDetails(entity.organisasjonsnummer);
+        website = details?.website;
+      } catch {
+        // proceed without website
+      }
     }
+
+    const faviconUrl = website ? getFavicon(website) : undefined;
+    const next = [{ ...entity, website, faviconUrl }, ...favoritesList];
+    setFavorites(next);
+    showToast({ style: Toast.Style.Success, title: "Added to Favorites", message: entity.navn });
   };
 
   const removeFavorite = (entity: Enhet) => {
@@ -132,7 +136,7 @@ export function useFavorites() {
 
     const next = favoritesList.filter((f) => f.organisasjonsnummer !== entity.organisasjonsnummer);
     setFavorites(next);
-    showToast(Toast.Style.Success, "Removed from Favorites", entity.navn);
+    showToast({ style: Toast.Style.Success, title: "Removed from Favorites", message: entity.navn });
   };
 
   const updateFavoriteEmoji = (entity: Enhet, emoji?: string) => {
@@ -142,7 +146,7 @@ export function useFavorites() {
       f.organisasjonsnummer === entity.organisasjonsnummer ? { ...f, emoji: emoji || undefined } : f,
     );
     setFavorites(next);
-    showToast(Toast.Style.Success, emoji ? "Emoji Updated" : "Emoji Cleared", entity.navn);
+    showToast({ style: Toast.Style.Success, title: emoji ? "Emoji Updated" : "Emoji Cleared", message: entity.navn });
   };
 
   const resetFavoriteToFavicon = (entity: Enhet) => {
@@ -158,7 +162,7 @@ export function useFavorites() {
         f.organisasjonsnummer === entity.organisasjonsnummer ? { ...f, website, faviconUrl } : f,
       );
       setFavorites(next);
-      showToast(Toast.Style.Success, "Favicon Refreshed", entity.navn);
+      showToast({ style: Toast.Style.Success, title: "Favicon Refreshed", message: entity.navn });
     } catch {
       showFailureToast("Failed to refresh favicon");
     }
@@ -179,18 +183,19 @@ export function useFavorites() {
     newList[newIndex] = temp;
 
     setFavorites(newList);
-    showToast(Toast.Style.Success, `Moved ${direction}`, entity.navn);
+    showToast({ style: Toast.Style.Success, title: `Moved ${direction}`, message: entity.navn });
   };
 
   const moveFavoriteUp = (entity: Enhet) => moveFavorite(entity, "up");
   const moveFavoriteDown = (entity: Enhet) => moveFavorite(entity, "down");
 
   const toggleMoveMode = () => {
-    setShowMoveIndicators(!showMoveIndicators);
-    showToast(
-      Toast.Style.Success,
-      showMoveIndicators ? "Move mode disabled" : "Move mode enabled - Use ⌘⇧↑↓ to reorder favorites",
-    );
+    const enabling = !showMoveIndicators;
+    setShowMoveIndicators(enabling);
+    showToast({
+      style: Toast.Style.Success,
+      title: enabling ? "Move mode enabled - Use ⌘⇧↑↓ to reorder favorites" : "Move mode disabled",
+    });
   };
 
   return {
@@ -212,7 +217,6 @@ export function useFavorites() {
     toggleMoveMode,
 
     // Utilities
-    hasFavorites: favoritesList.length > 0,
     getFavoriteByOrgNumber: (orgNumber: string) => favoriteById.get(orgNumber),
   };
 }

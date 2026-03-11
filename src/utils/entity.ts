@@ -1,12 +1,13 @@
 import { Enhet } from "../types";
 import type { Image } from "@raycast/api";
-import { Icon } from "@raycast/api";
+import { Clipboard, Icon, showToast, Toast } from "@raycast/api";
 
 /**
- * Get the display icon for an entity, prioritizing emoji over favicon
+ * Get the display icon for an entity, prioritizing emoji over favicon.
+ * Falls back to Icon.Globe when neither is set.
  */
-export function getEntityIcon(entity: Enhet): Image.ImageLike | undefined {
-  return entity.emoji || entity.faviconUrl;
+export function getEntityIcon(entity: Enhet): Image.ImageLike {
+  return entity.emoji || entity.faviconUrl || Icon.Globe;
 }
 
 /**
@@ -98,4 +99,36 @@ export function getVatRegistrationStatus(entity: {
 export function formatNorwegianVatNumber(orgNumber: string): string {
   const trimmed = orgNumber.trim().replace(/\s+/g, "");
   return `NO ${trimmed} MVA`;
+}
+
+/**
+ * Copy the Norwegian VAT number for a company to clipboard.
+ * Shows a failure toast if the company is not VAT-registered or status is unknown.
+ */
+export async function copyVatNumberToClipboard(
+  orgNumber: string,
+  name: string,
+  vatStatus: boolean | undefined,
+  successMessage?: (vatNumber: string) => string,
+  notVatRegisteredMessage?: (name: string) => string,
+): Promise<void> {
+  if (vatStatus !== true) {
+    const title = vatStatus === false ? "Not VAT Registered" : "VAT Status Unknown";
+    const message =
+      vatStatus === false
+        ? notVatRegisteredMessage
+          ? notVatRegisteredMessage(name)
+          : `${name} is not registered for VAT`
+        : `VAT registration status for ${name} is unknown`;
+    await showToast({ style: Toast.Style.Failure, title, message });
+    return;
+  }
+
+  const vatNumber = formatNorwegianVatNumber(orgNumber);
+  await Clipboard.copy(vatNumber);
+  await showToast({
+    style: Toast.Style.Success,
+    title: "VAT Number Copied",
+    message: successMessage ? successMessage(vatNumber) : vatNumber,
+  });
 }

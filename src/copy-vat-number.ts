@@ -1,6 +1,6 @@
-import { Clipboard, showToast, Toast } from "@raycast/api";
+import { showToast, Toast } from "@raycast/api";
 import { getCompanyDetails } from "./brreg-api";
-import { formatNorwegianVatNumber } from "./utils/entity";
+import { copyVatNumberToClipboard } from "./utils/entity";
 import { API_CONFIG } from "./constants";
 
 interface Arguments {
@@ -8,10 +8,8 @@ interface Arguments {
 }
 
 export default async function Command({ arguments: { organizationNumber } }: { arguments: Arguments }) {
-  // Normalize organization number (remove whitespace)
   const normalized = organizationNumber.trim().replace(/\s+/g, "");
 
-  // Validate: must be 9 digits
   if (normalized.length !== API_CONFIG.MIN_ORG_NUMBER_LENGTH || !/^\d+$/.test(normalized)) {
     await showToast({
       style: Toast.Style.Failure,
@@ -22,7 +20,6 @@ export default async function Command({ arguments: { organizationNumber } }: { a
   }
 
   try {
-    // Fetch company details to check VAT registration status
     const company = await getCompanyDetails(normalized);
 
     if (!company) {
@@ -34,29 +31,13 @@ export default async function Command({ arguments: { organizationNumber } }: { a
       return;
     }
 
-    if (company.isVatRegistered !== true) {
-      const title = company.isVatRegistered === false ? "Not VAT Registered" : "VAT Status Unknown";
-      const message =
-        company.isVatRegistered === false
-          ? `Company ${company.name} is not registered for VAT`
-          : `VAT registration status for ${company.name} is unknown`;
-      await showToast({
-        style: Toast.Style.Failure,
-        title,
-        message,
-      });
-      return;
-    }
-
-    // Format and copy VAT number
-    const vatNumber = formatNorwegianVatNumber(normalized);
-    await Clipboard.copy(vatNumber);
-
-    await showToast({
-      style: Toast.Style.Success,
-      title: "VAT Number Copied",
-      message: `${vatNumber} copied to clipboard`,
-    });
+    await copyVatNumberToClipboard(
+      normalized,
+      company.name,
+      company.isVatRegistered,
+      (vatNumber) => `${vatNumber} copied to clipboard`,
+      (name) => `Company ${name} is not registered for VAT`,
+    );
   } catch (error) {
     await showToast({
       style: Toast.Style.Failure,

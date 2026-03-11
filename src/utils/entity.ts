@@ -110,11 +110,14 @@ export async function copyVatNumberToClipboard(
   name: string,
   vatStatus: boolean | undefined,
   successMessage?: (vatNumber: string) => string,
+  notVatRegisteredMessage?: (name: string) => string,
 ): Promise<void> {
   if (vatStatus !== true) {
     const title = vatStatus === false ? "Not VAT Registered" : "VAT Status Unknown";
     const message =
-      vatStatus === false ? `${name} is not registered for VAT` : `VAT registration status for ${name} is unknown`;
+      vatStatus === false
+        ? (notVatRegisteredMessage ? notVatRegisteredMessage(name) : `${name} is not registered for VAT`)
+        : `VAT registration status for ${name} is unknown`;
     await showToast({ style: Toast.Style.Failure, title, message });
     return;
   }

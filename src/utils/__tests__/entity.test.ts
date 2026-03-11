@@ -173,6 +173,24 @@ describe("copyVatNumberToClipboard", () => {
     );
   });
 
+  it("supports overriding not VAT registered message", async () => {
+    await copyVatNumberToClipboard(
+      "123456789",
+      "Test AS",
+      false,
+      undefined,
+      (name) => `Company ${name} is not registered for VAT`,
+    );
+    expect(Clipboard.copy).not.toHaveBeenCalled();
+    expect(showToast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        style: Toast.Style.Failure,
+        title: "Not VAT Registered",
+        message: "Company Test AS is not registered for VAT",
+      }),
+    );
+  });
+
   it("shows unknown status toast when vatStatus is undefined", async () => {
     await copyVatNumberToClipboard("123456789", "Test AS", undefined);
     expect(Clipboard.copy).not.toHaveBeenCalled();

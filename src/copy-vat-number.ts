@@ -36,6 +36,7 @@ export default async function Command({ arguments: { organizationNumber } }: { a
       company.name,
       company.isVatRegistered,
       (vatNumber) => `${vatNumber} copied to clipboard`,
+      (name) => `Company ${name} is not registered for VAT`,
     );
   } catch (error) {
     await showToast({

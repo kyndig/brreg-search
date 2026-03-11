@@ -1,9 +1,34 @@
 import type { Keyboard } from "@raycast/api";
 
+const MODIFIER_SYMBOLS: Record<string, string> = {
+  cmd: "⌘",
+  shift: "⇧",
+  ctrl: "⌃",
+  alt: "⌥",
+};
+
+const KEY_SYMBOLS: Record<string, string> = {
+  arrowUp: "↑",
+  arrowDown: "↓",
+  arrowLeft: "←",
+  arrowRight: "→",
+  enter: "↵",
+  backspace: "⌫",
+  tab: "⇥",
+  space: "Space",
+};
+
+/**
+ * Format a Raycast Keyboard.Shortcut to a human-readable symbol string (e.g. "⌘⇧C").
+ */
+export function formatShortcut(shortcut: Keyboard.Shortcut): string {
+  const modifiers = shortcut.modifiers.map((m) => MODIFIER_SYMBOLS[m] ?? m).join("");
+  const key = KEY_SYMBOLS[shortcut.key] ?? shortcut.key.toUpperCase();
+  return `${modifiers}${key}`;
+}
+
 // API Configuration
 export const API_CONFIG = {
-  BASE_URL: "https://virksomhet.brreg.no",
-  SEARCH_ENDPOINT: "/oppslag/enheter",
   MIN_ORG_NUMBER_LENGTH: 9,
 } as const;
 
@@ -51,18 +76,14 @@ export const UI_TEXT = {
   SEARCH_PLACEHOLDER: "Search for name or organisation number",
   MOVE_MODE_ACTIVE: "Move Mode Active - Use ⌘⇧↑↓ to reorder favorites",
   FAVORITES_SECTION: "Favorites",
-  RESULTS_SECTION: "Results",
   MOVE_MODE_INDICATOR: " - Move Mode Active (⌘⇧)",
-  COPY_SUCCESS: {
-    ORG_NUMBER: "Organization number copied to clipboard",
-    ADDRESS: "Address copied to clipboard",
-    REVENUE: "Revenue copied to clipboard",
-    NET_RESULT: "Net result copied to clipboard",
-  },
 } as const;
 
 // Project Links
 export const GITHUB_REPO_URL = "https://github.com/kyndig/brreg-search" as const;
+
+// HTTP
+export const USER_AGENT = `Raycast-Brreg-Search/1.0.0 (${GITHUB_REPO_URL})` as const;
 
 // Markdown Content
 export const WELCOME_MARKDOWN =

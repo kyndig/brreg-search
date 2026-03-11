@@ -1,6 +1,7 @@
 import { Company, Enhet } from "./types";
 import type { FinancialYear } from "./types";
 import { getBregUrl, getVatRegistrationStatus } from "./utils/entity";
+import { USER_AGENT } from "./constants";
 
 const BASE_URL = "https://data.brreg.no/enhetsregisteret/api";
 
@@ -100,7 +101,7 @@ export async function getCompanyDetails(organizationNumber: string): Promise<Com
     const response = await fetch(detailUrl, {
       headers: {
         Accept: "application/json",
-        "User-Agent": "Raycast-Brreg-Search/1.0.0",
+        "User-Agent": USER_AGENT,
       },
     });
 
@@ -154,7 +155,7 @@ export async function searchEntities(query: string): Promise<Enhet[]> {
   const response = await fetch(`${BASE_URL}/enheter?${paramName}=${encodeURIComponent(trimmed)}`, {
     headers: {
       Accept: "application/json",
-      "User-Agent": "Raycast-Brreg-Search/1.0.0",
+      "User-Agent": USER_AGENT,
     },
   });
   if (!response.ok) {
@@ -182,7 +183,7 @@ export async function getAnnualAccounts(organizationNumber: string): Promise<{
     const response = await fetch(accountsUrl, {
       headers: {
         Accept: "application/xml",
-        "User-Agent": "Raycast-Brreg-Search/1.0.0",
+        "User-Agent": USER_AGENT,
       },
     });
     if (!response.ok) return null;

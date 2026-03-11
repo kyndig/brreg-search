@@ -1,4 +1,5 @@
 import { List, ActionPanel, Action } from "@raycast/api";
+import { getFavicon } from "@raycast/utils";
 import CompanyDetailsView from "./components/CompanyDetailsView";
 import FavoritesList from "./components/FavoritesList";
 import SearchResults from "./components/SearchResults";
@@ -8,6 +9,7 @@ import { useFavorites } from "./hooks/useFavorites";
 import { useSearch } from "./hooks/useSearch";
 import { useCompanyView } from "./hooks/useCompanyView";
 import { useSettings } from "./hooks/useSettings";
+import { UI_TEXT } from "./constants";
 
 export default function SearchAndCopyCommand() {
   const favoritesResult = useFavorites();
@@ -47,6 +49,7 @@ export default function SearchAndCopyCommand() {
         ? { adresse: [currentCompany.address], postnummer: currentCompany.postalCode, poststed: currentCompany.city }
         : undefined,
       website: currentCompany.website,
+      faviconUrl: currentCompany.website ? getFavicon(currentCompany.website) : undefined,
     });
 
     return (
@@ -66,11 +69,7 @@ export default function SearchAndCopyCommand() {
       isLoading={isLoading || isLoadingFavorites}
       onSearchTextChange={setSearchText}
       throttle
-      searchBarPlaceholder={
-        showMoveIndicators
-          ? "Move Mode Active - Use ⌘⇧↑↓ to reorder favorites"
-          : "Search for name or organisation number"
-      }
+      searchBarPlaceholder={showMoveIndicators ? UI_TEXT.MOVE_MODE_ACTIVE : UI_TEXT.SEARCH_PLACEHOLDER}
     >
       {trimmed.length === 0 && (
         <FavoritesList

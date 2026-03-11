@@ -60,8 +60,8 @@ View detailed company information in three tabs:
 - `⌘⇧↓` — Move favourite down (move mode active)
 
 **Copy actions**
-- `⌘O` — Copy organisation number
-- `⌘B` — Copy business address
+- `⌘⇧C` — Copy organisation number
+- `⌘⇧B` — Copy business address
 - `⌘⇧R` — Copy revenue
 - `⌘⇧N` — Copy net result
 

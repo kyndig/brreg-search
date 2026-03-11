@@ -4,6 +4,7 @@ import { KEYBOARD_SHORTCUTS, formatShortcut } from "../constants";
 interface ShortcutEntry {
   action: string;
   shortcutKey?: keyof typeof KEYBOARD_SHORTCUTS;
+  shortcutText?: string;
   description: string;
 }
 
@@ -16,8 +17,12 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
   {
     title: "Search & Navigation",
     shortcuts: [
-      { action: "Search", description: "Search by company name or organization number" },
-      { action: "View Details", description: "View detailed company information" },
+      {
+        action: "Search",
+        shortcutText: "Type to search",
+        description: "Search by company name or organization number",
+      },
+      { action: "View Details", shortcutText: "Enter", description: "View detailed company information" },
       {
         action: "Open in Browser",
         shortcutKey: "OPEN_IN_BROWSER",
@@ -101,7 +106,9 @@ export default function KeyboardShortcutsHelp() {
           {group.shortcuts.map((shortcut) => {
             const shortcutDisplay = shortcut.shortcutKey
               ? formatShortcut(KEYBOARD_SHORTCUTS[shortcut.shortcutKey])
-              : "No shortcut";
+              : shortcut.shortcutText
+                ? shortcut.shortcutText
+                : "No shortcut";
             return (
               <List.Item
                 key={shortcut.action}

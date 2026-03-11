@@ -41,11 +41,6 @@ export interface FinancialYear {
   ebitda?: number;
 }
 
-export interface SearchResult {
-  companies: Company[];
-  hasMore: boolean;
-}
-
 // BRREG Enhetsregisteret entity summary used in search lists and favorites
 export interface Enhet {
   organisasjonsnummer: string;

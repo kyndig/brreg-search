@@ -94,8 +94,7 @@ describe("formatCurrency", () => {
   it("formats a negative amount", () => {
     const result = formatCurrency("(500000)");
     expect(result).toBeDefined();
-    // Should be negative
-    const num = toNumber("(500000)");
-    expect(num).toBe(-500000);
+    expect(result).toMatch(/[-\u2212]/);
+    expect(result).toMatch(/500[\s\u00A0]?000/);
   });
 });

@@ -34,7 +34,7 @@ export const API_CONFIG = {
 
 // Keyboard Shortcuts
 export const KEYBOARD_SHORTCUTS = {
-  COPY_ORG_NUMBER: { modifiers: ["cmd", "shift"], key: "c" },
+  COPY_ORG_NUMBER: Keyboard.Shortcut.Common.Copy,
   COPY_VAT_NUMBER: { modifiers: ["cmd", "shift"], key: "v" },
   COPY_ADDRESS: { modifiers: ["cmd"], key: "b" },
   COPY_REVENUE: { modifiers: ["cmd", "shift"], key: "r" },

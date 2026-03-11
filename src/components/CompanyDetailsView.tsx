@@ -1,9 +1,10 @@
-import { Detail, ActionPanel, Action, Clipboard, Icon, showToast, Toast } from "@raycast/api";
+import { Detail, ActionPanel, Action, Icon } from "@raycast/api";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import { Company } from "../types";
-import { KEYBOARD_SHORTCUTS } from "../constants";
+import { KEYBOARD_SHORTCUTS, USER_AGENT } from "../constants";
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { formatNorwegianVatNumber } from "../utils/entity";
+import { copyVatNumberToClipboard } from "../utils/entity";
+import { getMapTileUrl } from "../utils/map";
 
 const TAB_ORDER = ["overview", "financials", "map"] as const;
 type TabId = (typeof TAB_ORDER)[number];
@@ -36,31 +37,10 @@ export default function CompanyDetailsView({
   const geocodeCacheRef = useMemo(() => new Map<string, { lat: number; lon: number }>(), []);
   const lastGeocodeAtRef = useMemo(() => ({ value: 0 }), []);
 
-  const copyVatNumber = useCallback(async () => {
-    if (!company.organizationNumber) return;
-
-    if (company.isVatRegistered !== true) {
-      const title = company.isVatRegistered === false ? "Not VAT Registered" : "VAT Status Unknown";
-      const message =
-        company.isVatRegistered === false
-          ? `${company.name} is not registered for VAT`
-          : `VAT registration status for ${company.name} is unknown`;
-      await showToast({
-        style: Toast.Style.Failure,
-        title,
-        message,
-      });
-      return;
-    }
-
-    const vatNumber = formatNorwegianVatNumber(company.organizationNumber);
-    await Clipboard.copy(vatNumber);
-    await showToast({
-      style: Toast.Style.Success,
-      title: "VAT Number Copied",
-      message: vatNumber,
-    });
-  }, [company.isVatRegistered, company.name, company.organizationNumber]);
+  const copyVatNumber = useCallback(
+    () => copyVatNumberToClipboard(company.organizationNumber, company.name, company.isVatRegistered),
+    [company.organizationNumber, company.name, company.isVatRegistered],
+  );
 
   // Format address manually since we don't have the Enhet format
   const formattedAddress = useMemo(() => {
@@ -88,48 +68,24 @@ export default function CompanyDetailsView({
         if (now - lastGeocodeAtRef.value < 1000) return;
         lastGeocodeAtRef.value = now;
 
+        const ZOOM = 14;
         const cached = geocodeCacheRef.get(formattedAddress);
         if (cached) {
-          const zoom = 14;
-          const n = Math.pow(2, zoom);
-          const xTile = Math.floor(((cached.lon + 180) / 360) * n);
-          const yTile = Math.floor(
-            ((1 -
-              Math.log(Math.tan((cached.lat * Math.PI) / 180) + 1 / Math.cos((cached.lat * Math.PI) / 180)) / Math.PI) /
-              2) *
-              n,
-          );
-          const url = `https://tile.openstreetmap.org/${zoom}/${xTile}/${yTile}.png`;
-          setMapImageUrl(url);
+          setMapImageUrl(getMapTileUrl(cached.lat, cached.lon, ZOOM));
           return;
         }
 
         const res = await fetch(
           `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(formattedAddress)}`,
-          {
-            headers: {
-              Accept: "application/json",
-              // Nominatim usage policy requests a real/identifying UA; link back to the project.
-              "User-Agent": "Raycast-Brreg-Search/1.0.0 (https://github.com/kyndig/brreg-search)",
-            },
-          },
+          { headers: { Accept: "application/json", "User-Agent": USER_AGENT } },
         );
         if (!res.ok) return;
         const json = (await res.json()) as Array<{ lat: string; lon: string }>;
         if (cancelled || !json?.length) return;
-        const { lat, lon } = json[0];
-        const zoom = 14;
-        const latNum = parseFloat(lat);
-        const lonNum = parseFloat(lon);
+        const latNum = parseFloat(json[0].lat);
+        const lonNum = parseFloat(json[0].lon);
         geocodeCacheRef.set(formattedAddress, { lat: latNum, lon: lonNum });
-        const n = Math.pow(2, zoom);
-        const xTile = Math.floor(((lonNum + 180) / 360) * n);
-        const yTile = Math.floor(
-          ((1 - Math.log(Math.tan((latNum * Math.PI) / 180) + 1 / Math.cos((latNum * Math.PI) / 180)) / Math.PI) / 2) *
-            n,
-        );
-        const url = `https://tile.openstreetmap.org/${zoom}/${xTile}/${yTile}.png`;
-        setMapImageUrl(url);
+        setMapImageUrl(getMapTileUrl(latNum, lonNum, ZOOM));
       } catch {
         // ignore
       }

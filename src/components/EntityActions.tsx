@@ -1,9 +1,9 @@
-import { Action, Clipboard, Icon, showToast, Toast } from "@raycast/api";
+import { Action, Icon } from "@raycast/api";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import { Enhet } from "../types";
 import { KEYBOARD_SHORTCUTS } from "../constants";
 import React from "react";
-import { formatNorwegianVatNumber, getBregUrl, getVatRegistrationStatus } from "../utils/entity";
+import { copyVatNumberToClipboard, getBregUrl, getVatRegistrationStatus } from "../utils/entity";
 
 /**
  * Props for the EntityActions component
@@ -24,30 +24,8 @@ interface EntityActionsProps {
 function EntityActions({ entity, addressString, onViewDetails }: EntityActionsProps) {
   const bregUrl = getBregUrl(entity.organisasjonsnummer);
 
-  const copyVatNumber = async () => {
-    const isVatRegistered = getVatRegistrationStatus(entity);
-    if (isVatRegistered !== true) {
-      const title = isVatRegistered === false ? "Not VAT Registered" : "VAT Status Unknown";
-      const message =
-        isVatRegistered === false
-          ? `${entity.navn} is not registered for VAT`
-          : `VAT registration status for ${entity.navn} is unknown`;
-      await showToast({
-        style: Toast.Style.Failure,
-        title,
-        message,
-      });
-      return;
-    }
-
-    const vatNumber = formatNorwegianVatNumber(entity.organisasjonsnummer);
-    await Clipboard.copy(vatNumber);
-    await showToast({
-      style: Toast.Style.Success,
-      title: "VAT Number Copied",
-      message: vatNumber,
-    });
-  };
+  const copyVatNumber = () =>
+    copyVatNumberToClipboard(entity.organisasjonsnummer, entity.navn, getVatRegistrationStatus(entity));
 
   return (
     <>

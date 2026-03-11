@@ -23,10 +23,11 @@ const KEY_SYMBOLS: Record<string, string> = {
  * Handles both the plain { modifiers, key } variant and the cross-platform { macOS, Windows } variant.
  */
 export function formatShortcut(shortcut: Keyboard.Shortcut): string {
-  const { modifiers, key } = "macOS" in shortcut ? shortcut.macOS : shortcut;
-  const mods = modifiers.map((m) => MODIFIER_SYMBOLS[m] ?? m).join("");
-  const k = KEY_SYMBOLS[key] ?? key.toUpperCase();
-  return `${mods}${k}`;
+  const resolved = "macOS" in shortcut ? shortcut.macOS : shortcut;
+  const mods = (resolved.modifiers ?? []).map((m) => MODIFIER_SYMBOLS[m] ?? m).join("");
+  const keyValue = String(resolved.key);
+  const key = KEY_SYMBOLS[keyValue] ?? keyValue.toUpperCase();
+  return `${mods}${key}`;
 }
 
 // API Configuration

@@ -1,26 +1,31 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "br",
-  "title": "br",
-  "description": "",
-  "icon": "extension-icon.png",
-  "author": "dsorenes",
-  "owner": "kyndig",
+  "name": "brreg",
+  "title": "The Brønnøysund Register Centre Search",
+  "description": "Search and retrieve information about Norwegian companies from the Central Coordinating Register for Legal Entities in Norway (Enhetsregisteret)",
+  "icon": "icon.png",
+  "author": "kakaoduft",
+  "access": "public",
+  "contributors": [
+    "daniel_sorenes"
+  ],
   "categories": [
-    "Applications"
+    "Productivity",
+    "Web"
   ],
   "license": "MIT",
   "commands": [
     {
       "name": "brreg-search",
-      "title": "brreg search",
-      "description": "",
+      "title": "Brreg Search",
+      "description": "Search for Norwegian companies by name or organisation number",
       "mode": "view"
     }
   ],
   "dependencies": {
     "@raycast/api": "^1.90.0",
-    "@raycast/utils": "^1.17.0"
+    "@raycast/utils": "^1.17.0",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@raycast/eslint-config": "^1.0.11",

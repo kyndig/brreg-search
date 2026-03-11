@@ -20,12 +20,13 @@ const KEY_SYMBOLS: Record<string, string> = {
 
 /**
  * Format a Raycast Keyboard.Shortcut to a human-readable symbol string (e.g. "⌘⇧C").
+ * Handles both the plain { modifiers, key } variant and the cross-platform { macOS, Windows } variant.
  */
 export function formatShortcut(shortcut: Keyboard.Shortcut): string {
-  const macShortcut = "modifiers" in shortcut ? shortcut : shortcut.macOS;
-  const modifiers = macShortcut.modifiers.map((m: string) => MODIFIER_SYMBOLS[m] ?? m).join("");
-  const key = KEY_SYMBOLS[macShortcut.key] ?? macShortcut.key.toUpperCase();
-  return `${modifiers}${key}`;
+  const { modifiers, key } = "macOS" in shortcut ? shortcut.macOS : shortcut;
+  const mods = modifiers.map((m) => MODIFIER_SYMBOLS[m] ?? m).join("");
+  const k = KEY_SYMBOLS[key] ?? key.toUpperCase();
+  return `${mods}${k}`;
 }
 
 // API Configuration

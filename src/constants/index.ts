@@ -1,4 +1,4 @@
-import { Keyboard } from "@raycast/api";
+import type { Keyboard } from "@raycast/api";
 
 const MODIFIER_SYMBOLS: Record<string, string> = {
   cmd: "⌘",

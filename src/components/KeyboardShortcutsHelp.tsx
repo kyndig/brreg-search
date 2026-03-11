@@ -1,31 +1,26 @@
 import { List, ActionPanel, Action, useNavigation } from "@raycast/api";
+import { KEYBOARD_SHORTCUTS, formatShortcut } from "../constants";
+
+interface ShortcutEntry {
+  action: string;
+  shortcutKey?: keyof typeof KEYBOARD_SHORTCUTS;
+  description: string;
+}
 
 interface ShortcutGroup {
   title: string;
-  shortcuts: Array<{
-    action: string;
-    shortcut: string;
-    description: string;
-  }>;
+  shortcuts: ShortcutEntry[];
 }
 
 const SHORTCUT_GROUPS: ShortcutGroup[] = [
   {
     title: "Search & Navigation",
     shortcuts: [
-      {
-        action: "Search",
-        shortcut: "Type to search",
-        description: "Search by company name or organization number",
-      },
-      {
-        action: "View Details",
-        shortcut: "Enter",
-        description: "View detailed company information",
-      },
+      { action: "Search", description: "Search by company name or organization number" },
+      { action: "View Details", description: "View detailed company information" },
       {
         action: "Open in Browser",
-        shortcut: "⌘⇧↵",
+        shortcutKey: "OPEN_IN_BROWSER",
         description: "Open company in Brønnøysundregistrene",
       },
     ],
@@ -33,19 +28,15 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
   {
     title: "Favorites Management",
     shortcuts: [
-      {
-        action: "⭐ Add to Favorites",
-        shortcut: "⌘F",
-        description: "Add company to favorites",
-      },
+      { action: "Add to Favorites", shortcutKey: "ADD_TO_FAVORITES", description: "Add company to favorites" },
       {
         action: "Remove from Favorites",
-        shortcut: "⌘⇧F",
+        shortcutKey: "REMOVE_FROM_FAVORITES",
         description: "Remove company from favorites",
       },
       {
         action: "Toggle Move Mode",
-        shortcut: "⌘⇧M",
+        shortcutKey: "TOGGLE_MOVE_MODE",
         description: "Enable/disable favorites reordering",
       },
     ],
@@ -53,16 +44,8 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
   {
     title: "Favorites Reordering",
     shortcuts: [
-      {
-        action: "Move Up",
-        shortcut: "⌘⇧↑",
-        description: "Move favorite up in the list",
-      },
-      {
-        action: "Move Down",
-        shortcut: "⌘⇧↓",
-        description: "Move favorite down in the list",
-      },
+      { action: "Move Up", shortcutKey: "MOVE_UP", description: "Move favorite up in the list" },
+      { action: "Move Down", shortcutKey: "MOVE_DOWN", description: "Move favorite down in the list" },
     ],
   },
   {
@@ -70,49 +53,34 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
     shortcuts: [
       {
         action: "Copy Organization Number",
-        shortcut: "⌘⇧C",
+        shortcutKey: "COPY_ORG_NUMBER",
         description: "Copy organization number to clipboard",
       },
       {
         action: "Copy Vat Number",
-        shortcut: "⌘⇧V",
+        shortcutKey: "COPY_VAT_NUMBER",
         description: "Copy Norwegian VAT number (NO {orgnr} MVA) to clipboard",
       },
-      {
-        action: "Copy Address",
-        shortcut: "⌘B",
-        description: "Copy business address to clipboard",
-      },
-      {
-        action: "Copy Revenue",
-        shortcut: "⌘⇧R",
-        description: "Copy revenue to clipboard",
-      },
-      {
-        action: "Copy Net Result",
-        shortcut: "⌘⇧N",
-        description: "Copy net result to clipboard",
-      },
+      { action: "Copy Address", shortcutKey: "COPY_ADDRESS", description: "Copy business address to clipboard" },
+      { action: "Copy Revenue", shortcutKey: "COPY_REVENUE", description: "Copy revenue to clipboard" },
+      { action: "Copy Net Result", shortcutKey: "COPY_NET_RESULT", description: "Copy net result to clipboard" },
+    ],
+  },
+  {
+    title: "Tabs",
+    shortcuts: [
+      { action: "Overview", shortcutKey: "SHOW_OVERVIEW", description: "Switch to Overview tab" },
+      { action: "Financials", shortcutKey: "SHOW_FINANCIALS", description: "Switch to Financials tab" },
+      { action: "Map", shortcutKey: "SHOW_MAP", description: "Switch to Map tab" },
+      { action: "Previous Tab", shortcutKey: "PREVIOUS_TAB", description: "Go to previous tab" },
     ],
   },
   {
     title: "Emoji Management",
     shortcuts: [
-      {
-        action: "Set Emoji",
-        shortcut: "No shortcut",
-        description: "Set custom emoji for company",
-      },
-      {
-        action: "Reset to Favicon",
-        shortcut: "No shortcut",
-        description: "Reset to default favicon",
-      },
-      {
-        action: "Refresh Favicon",
-        shortcut: "No shortcut",
-        description: "Refresh company favicon",
-      },
+      { action: "Set Emoji", description: "Set custom emoji for company" },
+      { action: "Reset to Favicon", description: "Reset to default favicon" },
+      { action: "Refresh Favicon", description: "Refresh company favicon" },
     ],
   },
 ];
@@ -130,15 +98,20 @@ export default function KeyboardShortcutsHelp() {
     >
       {SHORTCUT_GROUPS.map((group) => (
         <List.Section key={group.title} title={group.title}>
-          {group.shortcuts.map((shortcut) => (
-            <List.Item
-              key={shortcut.action}
-              title={shortcut.action}
-              subtitle={shortcut.description}
-              accessories={[{ text: shortcut.shortcut }]}
-              icon="⌨️"
-            />
-          ))}
+          {group.shortcuts.map((shortcut) => {
+            const shortcutDisplay = shortcut.shortcutKey
+              ? formatShortcut(KEYBOARD_SHORTCUTS[shortcut.shortcutKey])
+              : "No shortcut";
+            return (
+              <List.Item
+                key={shortcut.action}
+                title={shortcut.action}
+                subtitle={shortcut.description}
+                accessories={[{ text: shortcutDisplay }]}
+                icon="⌨️"
+              />
+            );
+          })}
         </List.Section>
       ))}
     </List>

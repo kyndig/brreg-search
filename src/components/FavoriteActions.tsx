@@ -71,7 +71,7 @@ function FavoriteActions({
         <ActionPanel.Section title="Reorder">
           {canMoveUp && (
             <Action
-              title="Move Up"
+              title="Move Favorite Up"
               icon={Icon.ArrowUp}
               onAction={() => onMoveUp(entity)}
               shortcut={KEYBOARD_SHORTCUTS.MOVE_UP}
@@ -79,7 +79,7 @@ function FavoriteActions({
           )}
           {canMoveDown && (
             <Action
-              title="Move Down"
+              title="Move Favorite Down"
               icon={Icon.ArrowDown}
               onAction={() => onMoveDown(entity)}
               shortcut={KEYBOARD_SHORTCUTS.MOVE_DOWN}

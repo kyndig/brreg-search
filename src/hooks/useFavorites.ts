@@ -47,7 +47,6 @@ export function useFavorites() {
       let nextIndex = 0;
 
       const worker = async () => {
-        // eslint-disable-next-line no-constant-condition
         while (true) {
           const current = nextIndex;
           nextIndex += 1;

@@ -33,7 +33,7 @@ export const API_CONFIG = {
 } as const;
 
 // Keyboard Shortcuts
-export const KEYBOARD_SHORTCUTS: Record<string, Keyboard.Shortcut> = {
+export const KEYBOARD_SHORTCUTS = {
   COPY_ORG_NUMBER: { modifiers: ["cmd", "shift"], key: "c" },
   COPY_VAT_NUMBER: { modifiers: ["cmd", "shift"], key: "v" },
   COPY_ADDRESS: { modifiers: ["cmd"], key: "b" },
@@ -50,7 +50,7 @@ export const KEYBOARD_SHORTCUTS: Record<string, Keyboard.Shortcut> = {
   SHOW_MAP: { modifiers: ["cmd"], key: "3" },
   PREVIOUS_TAB: { modifiers: [], key: "backspace" },
   GO_BACK: { modifiers: ["cmd"], key: "arrowLeft" },
-};
+} satisfies Record<string, Keyboard.Shortcut>;
 
 // Emoji Categories
 export const EMOJI_CATEGORIES = [

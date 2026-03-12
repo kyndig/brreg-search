@@ -49,11 +49,7 @@ function EntityActions({ entity, addressString, onViewDetails }: EntityActionsPr
           shortcut={KEYBOARD_SHORTCUTS.COPY_ADDRESS}
         />
       )}
-      <Action.OpenInBrowser
-        shortcut={KEYBOARD_SHORTCUTS.OPEN_IN_BROWSER}
-        title="Open in Brønnøysundregistrene"
-        url={bregUrl}
-      />
+      <Action.OpenInBrowser shortcut={KEYBOARD_SHORTCUTS.OPEN_IN_BROWSER} title="Open in Brreg" url={bregUrl} />
       <Action.OpenInBrowser title="Open in Alle.as" url={alleAsUrl} />
       <Action.Push title="Keyboard Shortcuts" target={<KeyboardShortcutsHelp />} />
     </>

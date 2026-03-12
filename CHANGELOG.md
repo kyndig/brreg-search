@@ -15,7 +15,6 @@
 - Removed dead types and unused settings hook
 - Fixed dependabot security alerts by updating vulnerable transitive deps
 - Upgraded ESLint to v9 with flat config
-- Removed standalone `Copy Vat Number` launcher command; kept VAT copy as in-list action/shortcut
 - Added DRY search favicon strategy: top-3 hydration, debounced updates, and bounded in-memory cache
 
 ## [Documentation Update] - 2026-01-22

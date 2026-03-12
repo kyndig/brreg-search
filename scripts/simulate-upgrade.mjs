@@ -91,14 +91,17 @@ function updateChangelogTopRelease(changelogSource, targetVersion, targetDate) {
   return changelogSource.replace(currentHeading, nextHeading);
 }
 
-function runVersioningScript(root, captureOutput = false) {
-  const stdio = captureOutput ? ["ignore", "pipe", "pipe"] : "inherit";
-  return execSync("npm run test:versioning", { cwd: root, stdio, encoding: "utf8" });
+function runVersioningScript(root) {
+  return execSync("npm run test:versioning", { cwd: root, stdio: "inherit", encoding: "utf8" });
 }
 
 function runVersioningCheck(root) {
   try {
-    runVersioningScript(root, true);
+    execSync("npm run test:versioning", {
+      cwd: root,
+      stdio: ["ignore", "pipe", "pipe"],
+      encoding: "utf8",
+    });
     return true;
   } catch (error) {
     const stderr = typeof error?.stderr === "string" ? error.stderr : (error?.stderr?.toString?.("utf8") ?? "");

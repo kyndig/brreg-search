@@ -1,4 +1,5 @@
 import { ActionPanel, List } from "@raycast/api";
+import type { Image } from "@raycast/api";
 import { Enhet } from "../types";
 import { formatAddress } from "../utils/format";
 import { getEntityIcon, isFavorite, getFavoriteEntity } from "../utils/entity";
@@ -10,6 +11,7 @@ interface SearchResultsProps {
   entities: Enhet[];
   favoriteIds: Set<string>;
   favoriteById: Map<string, Enhet>;
+  getSearchFavicon: (orgNumber: string) => Image.ImageLike | undefined;
   onViewDetails: (entity: Enhet) => void;
   onAddFavorite: (entity: Enhet) => void;
   onRemoveFavorite: (entity: Enhet) => void;
@@ -22,6 +24,7 @@ export default function SearchResults({
   entities,
   favoriteIds,
   favoriteById,
+  getSearchFavicon,
   onViewDetails,
   onAddFavorite,
   onRemoveFavorite,
@@ -34,11 +37,12 @@ export default function SearchResults({
       const addressString = formatAddress(entity.forretningsadresse);
       const alreadyFavorite = isFavorite(entity, favoriteIds);
       const fav = getFavoriteEntity(entity, favoriteById);
-      const itemIcon = getEntityIcon(fav || entity);
+      const searchFavicon = getSearchFavicon(entity.organisasjonsnummer);
+      const itemIcon = getEntityIcon(fav || entity, searchFavicon);
 
       return { entity, addressString, alreadyFavorite, fav, itemIcon };
     });
-  }, [entities, favoriteIds, favoriteById]);
+  }, [entities, favoriteIds, favoriteById, getSearchFavicon]);
 
   if (entities.length === 0) {
     return (

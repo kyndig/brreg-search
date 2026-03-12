@@ -116,8 +116,9 @@ function main() {
   const changelog = readFileSync(changelogPath, "utf8");
 
   assertCondition(typeof packageJson.version === "string", "package.json must contain a string 'version' field.");
+  const originalVersion = packageJson.version.trim();
 
-  const targetVersion = args.to ? args.to.trim() : bumpVersion(packageJson.version.trim(), args.bump);
+  const targetVersion = args.to ? args.to.trim() : bumpVersion(originalVersion, args.bump);
   parseSemver(targetVersion);
 
   packageJson.version = targetVersion;
@@ -143,7 +144,7 @@ function main() {
     }
   }
 
-  console.log(`Upgrade simulation complete: ${packageJson.version} -> ${targetVersion}`);
+  console.log(`Upgrade simulation complete: ${originalVersion} -> ${targetVersion}`);
   console.log("Updated files: package.json, package-lock.json, CHANGELOG.md");
 }
 

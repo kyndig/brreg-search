@@ -1,6 +1,8 @@
 # Brreg Search Changelog
 
-## [Quality & Testing Sweep] - [PR_MERGE_DATE]
+## [1.0.0] - 2026-03-12
+
+_Quality & Testing Sweep_
 
 - Added Vitest infrastructure with Raycast API mocks
 - Added smoke tests for core utilities and Brreg API mapping

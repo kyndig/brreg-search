@@ -103,14 +103,17 @@ const CHANGELOG_HIGHLIGHTS_BY_VERSION: Record<string, readonly string[]> = {
   ],
 };
 
+const CHANGELOG_SHORTCUTS_HINT_MARKDOWN =
+  "\n\n---\n`Enter` closes this changelog. `Shift+Enter` opens Keyboard Shortcuts.";
+
 export function getChangelogMarkdown(version = APP_VERSION): string {
   const highlights = CHANGELOG_HIGHLIGHTS_BY_VERSION[version];
   if (!highlights) {
-    return `**Updated to version ${version}**\n\nSee the latest improvements and fixes in this release.`;
+    return `**Updated to version ${version}**\n\nSee the latest improvements and fixes in this release.${CHANGELOG_SHORTCUTS_HINT_MARKDOWN}`;
   }
 
   const lines = highlights.map((highlight) => `- ${highlight}`).join("\n");
-  return `**Updated to version ${version}**\n\nKey features include:\n${lines}`;
+  return `**Updated to version ${version}**\n\nKey features include:\n${lines}${CHANGELOG_SHORTCUTS_HINT_MARKDOWN}`;
 }
 
 // Markdown Content

@@ -18,8 +18,12 @@ export default function ChangelogView() {
       markdown={getChangelogMarkdown(APP_VERSION)}
       actions={
         <ActionPanel>
-          <Action.Push title="Keyboard Shortcuts" target={<KeyboardShortcutsHelp />} />
-          <Action title="Back" onAction={pop} />
+          <Action title="Close Changelog" onAction={pop} shortcut={{ modifiers: [], key: "enter" }} />
+          <Action.Push
+            title="Keyboard Shortcuts"
+            target={<KeyboardShortcutsHelp />}
+            shortcut={{ modifiers: ["shift"], key: "enter" }}
+          />
         </ActionPanel>
       }
     />

@@ -3,7 +3,7 @@ import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import { Company } from "../types";
 import { KEYBOARD_SHORTCUTS, USER_AGENT } from "../constants";
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { copyVatNumberToClipboard } from "../utils/entity";
+import { copyVatNumberToClipboard, getAlleAsUrl } from "../utils/entity";
 import { getMapTileUrl } from "../utils/map";
 
 const TAB_ORDER = ["overview", "financials", "map"] as const;
@@ -109,7 +109,7 @@ export default function CompanyDetailsView({
     if (activeTab === "overview") {
       return `${tabsHeader}\n\n# ${company.name}
 
-${company.description ? `**Description:** ${company.description}\n\n` : ""}${company.organizationNumber ? `**Organization Number:** ${company.organizationNumber}\n\n` : ""}${company.address ? `**Address:** ${company.address}\n\n` : ""}${company.phone ? `**Phone:** ${company.phone}\n\n` : ""}${company.email ? `**Email:** ${company.email}\n\n` : ""}${company.website ? `**Website:** [${company.website}](${company.website})\n\n` : ""}${company.employees ? `**Employees:** ${company.employees}\n\n` : ""}${company.industry ? `**Industry:** ${company.industry}\n\n` : ""}${company.isVatRegistered !== undefined ? `**VAT Registered:** ${company.isVatRegistered ? "Yes" : "No"}\n\n` : ""}${company.isAudited !== undefined ? `**Audited:** ${company.isAudited ? "Yes" : "No"}\n\n` : ""}${company.lastAccountsFromDate ? `**Last Filing Date:** ${company.lastAccountsFromDate}\n\n` : ""}${company.bregUrl ? `[Open in Brønnøysundregistrene](${company.bregUrl})` : ""}${company.organizationNumber ? ` | [Search in Proff](https://www.proff.no/bransjes%C3%B8k?q=${encodeURIComponent(company.name)})` : ""}`;
+${company.description ? `**Description:** ${company.description}\n\n` : ""}${company.organizationNumber ? `**Organization Number:** ${company.organizationNumber}\n\n` : ""}${company.address ? `**Address:** ${company.address}\n\n` : ""}${company.phone ? `**Phone:** ${company.phone}\n\n` : ""}${company.email ? `**Email:** ${company.email}\n\n` : ""}${company.website ? `**Website:** [${company.website}](${company.website})\n\n` : ""}${company.employees ? `**Employees:** ${company.employees}\n\n` : ""}${company.industry ? `**Industry:** ${company.industry}\n\n` : ""}${company.isVatRegistered !== undefined ? `**VAT Registered:** ${company.isVatRegistered ? "Yes" : "No"}\n\n` : ""}${company.isAudited !== undefined ? `**Audited:** ${company.isAudited ? "Yes" : "No"}\n\n` : ""}${company.lastAccountsFromDate ? `**Last Filing Date:** ${company.lastAccountsFromDate}\n\n` : ""}${company.bregUrl ? `[Open in Brreg](${company.bregUrl})` : ""}${company.organizationNumber ? ` | [Search in Proff](https://www.proff.no/bransjes%C3%B8k?q=${encodeURIComponent(company.name)})` : ""}`;
     }
 
     if (activeTab === "financials") {
@@ -257,6 +257,9 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ?
       actions={
         <ActionPanel>
           <Action.OpenInBrowser title="Open in Brreg" url={company.bregUrl || "https://www.brreg.no"} />
+          {company.organizationNumber && (
+            <Action.OpenInBrowser title="Open in Alle.as" url={getAlleAsUrl(company.organizationNumber)} />
+          )}
           {company.organizationNumber && (
             <Action.OpenInBrowser
               title="Search in Proff"

@@ -3,7 +3,7 @@ import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import { Enhet } from "../types";
 import { KEYBOARD_SHORTCUTS } from "../constants";
 import React from "react";
-import { copyVatNumberToClipboard, getBregUrl, getVatRegistrationStatus } from "../utils/entity";
+import { copyVatNumberToClipboard, getAlleAsUrl, getBregUrl, getVatRegistrationStatus } from "../utils/entity";
 
 /**
  * Props for the EntityActions component
@@ -23,6 +23,7 @@ interface EntityActionsProps {
  */
 function EntityActions({ entity, addressString, onViewDetails }: EntityActionsProps) {
   const bregUrl = getBregUrl(entity.organisasjonsnummer);
+  const alleAsUrl = getAlleAsUrl(entity.organisasjonsnummer);
 
   const copyVatNumber = () =>
     copyVatNumberToClipboard(entity.organisasjonsnummer, entity.navn, getVatRegistrationStatus(entity));
@@ -48,11 +49,8 @@ function EntityActions({ entity, addressString, onViewDetails }: EntityActionsPr
           shortcut={KEYBOARD_SHORTCUTS.COPY_ADDRESS}
         />
       )}
-      <Action.OpenInBrowser
-        shortcut={KEYBOARD_SHORTCUTS.OPEN_IN_BROWSER}
-        title="Open in Brønnøysundregistrene"
-        url={bregUrl}
-      />
+      <Action.OpenInBrowser shortcut={KEYBOARD_SHORTCUTS.OPEN_IN_BROWSER} title="Open in Brreg" url={bregUrl} />
+      <Action.OpenInBrowser title="Open in Alle.as" url={alleAsUrl} />
       <Action.Push title="Keyboard Shortcuts" target={<KeyboardShortcutsHelp />} />
     </>
   );

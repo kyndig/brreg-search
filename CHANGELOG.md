@@ -16,6 +16,7 @@
 - Fixed dependabot security alerts by updating vulnerable transitive deps
 - Upgraded ESLint to v9 with flat config
 - Added DRY search favicon strategy: top-3 hydration, debounced updates, and bounded in-memory cache
+- Added an `Open in Alle.as` action for company results, favourites, and detail views
 
 ## [Documentation Update] - 2026-01-22
 

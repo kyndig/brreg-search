@@ -3,7 +3,7 @@ import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import { Company } from "../types";
 import { KEYBOARD_SHORTCUTS, USER_AGENT } from "../constants";
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { copyVatNumberToClipboard } from "../utils/entity";
+import { copyVatNumberToClipboard, getAlleAsUrl } from "../utils/entity";
 import { getMapTileUrl } from "../utils/map";
 
 const TAB_ORDER = ["overview", "financials", "map"] as const;
@@ -257,6 +257,9 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ?
       actions={
         <ActionPanel>
           <Action.OpenInBrowser title="Open in Brreg" url={company.bregUrl || "https://www.brreg.no"} />
+          {company.organizationNumber && (
+            <Action.OpenInBrowser title="Open in Alle.as" url={getAlleAsUrl(company.organizationNumber)} />
+          )}
           {company.organizationNumber && (
             <Action.OpenInBrowser
               title="Search in Proff"

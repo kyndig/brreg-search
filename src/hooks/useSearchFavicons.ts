@@ -8,13 +8,9 @@ const SEARCH_FAVICON_LIMIT = 3;
 const SEARCH_FAVICON_DEBOUNCE_MS = 350;
 const SEARCH_FAVICON_CACHE_MAX = 300;
 
-type FaviconSource = "search" | "favorite" | "details";
-
 interface SearchFaviconEntry {
   website?: string;
   faviconUrl?: Image.ImageLike;
-  source: FaviconSource;
-  touchedAt: number;
 }
 
 function pruneCache(cache: Map<string, SearchFaviconEntry>) {
@@ -43,7 +39,7 @@ export function useSearchFavicons(entities: Enhet[], favoriteById: Map<string, E
 
     // Promote to most recently used.
     cache.delete(orgNumber);
-    cache.set(orgNumber, { ...existing, touchedAt: Date.now() });
+    cache.set(orgNumber, existing);
     return existing;
   }, []);
 
@@ -68,8 +64,6 @@ export function useSearchFavicons(entities: Enhet[], favoriteById: Map<string, E
         setEntry(orgNumber, {
           website,
           faviconUrl: getFavicon(website),
-          source: "search",
-          touchedAt: Date.now(),
         });
         changed = true;
       }
@@ -94,8 +88,6 @@ export function useSearchFavicons(entities: Enhet[], favoriteById: Map<string, E
       setEntry(entity.organisasjonsnummer, {
         website,
         faviconUrl,
-        source: "favorite",
-        touchedAt: Date.now(),
       });
       setVersion((v) => v + 1);
     },
@@ -113,8 +105,6 @@ export function useSearchFavicons(entities: Enhet[], favoriteById: Map<string, E
       setEntry(company.organizationNumber, {
         website,
         faviconUrl,
-        source: "details",
-        touchedAt: Date.now(),
       });
       setVersion((v) => v + 1);
     },

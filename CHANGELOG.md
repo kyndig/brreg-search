@@ -1,6 +1,6 @@
 # Brreg Search Changelog
 
-## [Quality & Testing Sweep] - 2026-03-11
+## [Quality & Testing Sweep] - {PR_MERGE_DATE}
 
 - Added Vitest infrastructure with Raycast API mocks
 - Added smoke tests for core utilities and Brreg API mapping
@@ -15,6 +15,8 @@
 - Removed dead types and unused settings hook
 - Fixed dependabot security alerts by updating vulnerable transitive deps
 - Upgraded ESLint to v9 with flat config
+- Removed standalone `Copy Vat Number` launcher command; kept VAT copy as in-list action/shortcut
+- Added DRY search favicon strategy: top-3 hydration, debounced updates, and bounded in-memory cache
 
 ## [Documentation Update] - 2026-01-22
 

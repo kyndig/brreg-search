@@ -6,11 +6,12 @@ import { useChangelogVersionGate } from "../hooks/useChangelogVersionGate";
 
 export default function ChangelogView() {
   const { pop } = useNavigation();
-  const { markCurrentVersionAsSeen } = useChangelogVersionGate();
+  const { markCurrentVersionAsSeen, isLoading } = useChangelogVersionGate();
 
   useEffect(() => {
+    if (isLoading) return;
     void markCurrentVersionAsSeen();
-  }, [markCurrentVersionAsSeen]);
+  }, [isLoading, markCurrentVersionAsSeen]);
 
   return (
     <Detail

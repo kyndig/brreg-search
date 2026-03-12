@@ -91,15 +91,25 @@ function updateChangelogTopRelease(changelogSource, targetVersion, targetDate) {
   return changelogSource.replace(currentHeading, nextHeading);
 }
 
+function runVersioningScript(root, captureOutput = false) {
+  const stdio = captureOutput ? ["ignore", "pipe", "pipe"] : "inherit";
+  return execSync("npm run test:versioning", { cwd: root, stdio, encoding: "utf8" });
+}
+
 function runVersioningCheck(root) {
   try {
-    execSync("npm run test:versioning", { cwd: root, stdio: "inherit" });
+    runVersioningScript(root, true);
     return true;
   } catch (error) {
-    const message = String(error?.stderr || error?.message || "");
+    const stderr = typeof error?.stderr === "string" ? error.stderr : (error?.stderr?.toString?.("utf8") ?? "");
+    const stdout = typeof error?.stdout === "string" ? error.stdout : (error?.stdout?.toString?.("utf8") ?? "");
+    const message = [stderr, stdout, String(error?.message || "")].join("\n");
     if (message.includes("Top changelog release version")) {
       return false;
     }
+
+    if (stdout) process.stdout.write(stdout);
+    if (stderr) process.stderr.write(stderr);
     throw error;
   }
 }
@@ -140,7 +150,7 @@ function main() {
       const latestChangelog = readFileSync(changelogPath, "utf8");
       const healedChangelog = updateChangelogTopRelease(latestChangelog, targetVersion, args.date);
       writeFileSync(changelogPath, healedChangelog, "utf8");
-      execSync("npm run test:versioning", { cwd: root, stdio: "inherit" });
+      runVersioningScript(root);
     }
   }
 

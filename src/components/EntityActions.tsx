@@ -1,5 +1,6 @@
 import { Action, Icon } from "@raycast/api";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
+import ChangelogView from "./ChangelogView";
 import { Enhet } from "../types";
 import { KEYBOARD_SHORTCUTS } from "../constants";
 import React from "react";
@@ -51,6 +52,7 @@ function EntityActions({ entity, addressString, onViewDetails }: EntityActionsPr
       )}
       <Action.OpenInBrowser shortcut={KEYBOARD_SHORTCUTS.OPEN_IN_BROWSER} title="Open in Brreg" url={bregUrl} />
       <Action.OpenInBrowser title="Open in Alle.as" url={alleAsUrl} />
+      <Action.Push title="Changelog" target={<ChangelogView />} />
       <Action.Push title="Keyboard Shortcuts" target={<KeyboardShortcutsHelp />} />
     </>
   );

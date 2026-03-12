@@ -1,6 +1,6 @@
 # Brreg Search Changelog
 
-## [1.0.0] - 2026-03-12
+## [1.0.1] - 2026-03-12
 
 _Quality & Testing Sweep_
 

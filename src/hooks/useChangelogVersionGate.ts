@@ -13,6 +13,19 @@ export function shouldDisplayChangelog(lastSeenVersion: string | undefined, curr
   return normalizedLastSeen !== normalizedCurrent;
 }
 
+export function shouldMarkVersionAsSeen(
+  isLoading: boolean,
+  lastSeenVersion: string | undefined,
+  currentVersion: string,
+): boolean {
+  const normalizedCurrent = currentVersion.trim();
+  if (isLoading || !normalizedCurrent) {
+    return false;
+  }
+
+  return lastSeenVersion?.trim() !== normalizedCurrent;
+}
+
 export function useChangelogVersionGate(currentVersion = APP_VERSION) {
   const {
     value: lastSeenVersion,
@@ -21,10 +34,15 @@ export function useChangelogVersionGate(currentVersion = APP_VERSION) {
   } = useLocalStorage<string>(STORAGE_KEYS.LAST_SEEN_CHANGELOG_VERSION);
   const hasInitializedRef = useRef(false);
   const lastSeenVersionRef = useRef<string | undefined>(lastSeenVersion);
+  const isLoadingRef = useRef(isLoading);
 
   useEffect(() => {
     lastSeenVersionRef.current = lastSeenVersion;
   }, [lastSeenVersion]);
+
+  useEffect(() => {
+    isLoadingRef.current = isLoading;
+  }, [isLoading]);
 
   useEffect(() => {
     if (isLoading) return;
@@ -50,8 +68,11 @@ export function useChangelogVersionGate(currentVersion = APP_VERSION) {
 
   const markCurrentVersionAsSeen = useCallback(async () => {
     const normalizedCurrent = currentVersion.trim();
-    if (!normalizedCurrent || lastSeenVersionRef.current === normalizedCurrent) return;
+    if (!shouldMarkVersionAsSeen(isLoadingRef.current, lastSeenVersionRef.current, normalizedCurrent)) return;
+
     await setLastSeenVersion(normalizedCurrent);
+    // Keep ref in sync immediately to avoid duplicate writes before storage rehydrates.
+    lastSeenVersionRef.current = normalizedCurrent;
   }, [currentVersion, setLastSeenVersion]);
 
   return {

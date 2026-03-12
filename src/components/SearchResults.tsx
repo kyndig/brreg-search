@@ -5,7 +5,6 @@ import { formatAddress } from "../utils/format";
 import { getEntityIcon, isFavorite, getFavoriteEntity } from "../utils/entity";
 import EntityActions from "./EntityActions";
 import SearchResultActions from "./SearchResultActions";
-import { useMemo } from "react";
 
 interface SearchResultsProps {
   entities: Enhet[];
@@ -32,17 +31,15 @@ export default function SearchResults({
   onResetToFavicon,
   onRefreshFavicon,
 }: SearchResultsProps) {
-  const displayItems = useMemo(() => {
-    return entities.map((entity) => {
-      const addressString = formatAddress(entity.forretningsadresse);
-      const alreadyFavorite = isFavorite(entity, favoriteIds);
-      const fav = getFavoriteEntity(entity, favoriteById);
-      const searchFavicon = getSearchFavicon(entity.organisasjonsnummer);
-      const itemIcon = getEntityIcon(fav || entity, searchFavicon);
+  const displayItems = entities.map((entity) => {
+    const addressString = formatAddress(entity.forretningsadresse);
+    const alreadyFavorite = isFavorite(entity, favoriteIds);
+    const fav = getFavoriteEntity(entity, favoriteById);
+    const searchFavicon = getSearchFavicon(entity.organisasjonsnummer);
+    const itemIcon = getEntityIcon(fav || entity, searchFavicon);
 
-      return { entity, addressString, alreadyFavorite, fav, itemIcon };
-    });
-  }, [entities, favoriteIds, favoriteById, getSearchFavicon]);
+    return { entity, addressString, alreadyFavorite, fav, itemIcon };
+  });
 
   if (entities.length === 0) {
     return (

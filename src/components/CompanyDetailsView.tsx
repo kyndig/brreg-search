@@ -1,5 +1,6 @@
 import { Detail, ActionPanel, Action, Icon } from "@raycast/api";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
+import ChangelogView from "./ChangelogView";
 import { Company } from "../types";
 import { KEYBOARD_SHORTCUTS, USER_AGENT } from "../constants";
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -342,6 +343,7 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ?
             />
           </ActionPanel.Section>
           {mapImageUrl && <Action.OpenInBrowser title="Open Static Map Image" url={mapImageUrl} />}
+          <Action.Push title="Changelog" target={<ChangelogView />} />
           <Action.Push title="Keyboard Shortcuts" target={<KeyboardShortcutsHelp />} />
           <Action title="Go Back" onAction={onBack} shortcut={KEYBOARD_SHORTCUTS.GO_BACK} />
         </ActionPanel>

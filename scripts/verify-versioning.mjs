@@ -38,10 +38,13 @@ assertCondition(
   "USER_AGENT must use APP_VERSION in src/constants/index.ts.",
 );
 
-const releaseHeadingMatch = changelog.match(/^## \[(\d+\.\d+\.\d+(?:-[0-9A-Za-z-.]+)?)\] - (\d{4}-\d{2}-\d{2})$/m);
+const releaseDatePattern = String.raw`(?:\d{4}-\d{2}-\d{2}|\{PR_MERGE_DATE\})`;
+const releaseHeadingMatch = changelog.match(
+  new RegExp(String.raw`^## \[(\d+\.\d+\.\d+(?:-[0-9A-Za-z-.]+)?)\] - ${releaseDatePattern}$`, "m"),
+);
 assertCondition(
   Boolean(releaseHeadingMatch),
-  "CHANGELOG.md must contain at least one release heading like: ## [1.2.3] - YYYY-MM-DD",
+  "CHANGELOG.md must contain at least one release heading like: ## [1.2.3] - YYYY-MM-DD or ## [1.2.3] - {PR_MERGE_DATE}",
 );
 
 const changelogVersion = releaseHeadingMatch?.[1] ?? "";

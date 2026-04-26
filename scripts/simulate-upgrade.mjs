@@ -77,7 +77,7 @@ function bumpVersion(version, bumpType) {
 }
 
 function updateChangelogTopRelease(changelogSource, targetVersion, targetDate) {
-  const releaseHeadingRegex = /^## \[(\d+\.\d+\.\d+(?:-[0-9A-Za-z-.]+)?)\] - (\d{4}-\d{2}-\d{2})$/m;
+  const releaseHeadingRegex = /^## \[(\d+\.\d+\.\d+(?:-[0-9A-Za-z-.]+)?)\] - (\d{4}-\d{2}-\d{2}|\{PR_MERGE_DATE\})$/m;
   const match = changelogSource.match(releaseHeadingRegex);
 
   if (!match) {

@@ -62,11 +62,19 @@ export default function SearchAndCopyCommand() {
     const toEnhet = () => ({
       organisasjonsnummer: currentCompany.organizationNumber,
       navn: currentCompany.name,
+      organisasjonsform:
+        currentCompany.organizationFormCode || currentCompany.organizationFormDescription
+          ? {
+              kode: currentCompany.organizationFormCode,
+              beskrivelse: currentCompany.organizationFormDescription,
+            }
+          : undefined,
       forretningsadresse: currentCompany.address
         ? { adresse: [currentCompany.address], postnummer: currentCompany.postalCode, poststed: currentCompany.city }
         : undefined,
       website: currentCompany.website,
     });
+    const currentEntity = toEnhet();
 
     return (
       <CompanyDetailsView
@@ -74,8 +82,8 @@ export default function SearchAndCopyCommand() {
         isLoading={isLoadingDetails}
         onBack={closeCompanyView}
         isFavorite={isFav}
-        onAddFavorite={() => handleAddFavorite(toEnhet())}
-        onRemoveFavorite={() => removeFavorite(toEnhet())}
+        onAddFavorite={() => handleAddFavorite(currentEntity)}
+        onRemoveFavorite={() => removeFavorite(currentEntity)}
       />
     );
   }

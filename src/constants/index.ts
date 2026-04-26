@@ -96,7 +96,7 @@ export const USER_AGENT = `Raycast-Brreg-Search/${APP_VERSION} (${GITHUB_REPO_UR
 
 // Changelog
 const CHANGELOG_HIGHLIGHTS_BY_VERSION: Record<string, readonly string[]> = {
-  "1.0.1": [
+  [APP_VERSION]: [
     "Favorite companies for quick access and retrieval.",
     "Open company pages directly in Alle.as.",
     "Use keyboard shortcuts for faster search and navigation.",

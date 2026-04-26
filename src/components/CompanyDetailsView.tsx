@@ -25,6 +25,17 @@ interface CompanyDetailsViewProps {
   onRemoveFavorite: () => void;
 }
 
+function formatOrganizationForm(company: Company): string | undefined {
+  if (company.organizationFormDescription && company.organizationFormCode) {
+    return `${company.organizationFormDescription} (${company.organizationFormCode})`;
+  }
+  return company.organizationFormDescription || company.organizationFormCode;
+}
+
+function formatYesNo(value: boolean): string {
+  return value ? "Yes" : "No";
+}
+
 export default function CompanyDetailsView({
   company,
   isLoading,
@@ -108,15 +119,28 @@ export default function CompanyDetailsView({
 
   const markdown = useMemo(() => {
     if (activeTab === "overview") {
+      const contactLines = [
+        company.phone ? `**Phone:** ${company.phone}` : undefined,
+        company.email ? `**Email:** ${company.email}` : undefined,
+        company.website ? `**Website:** [${company.website}](${company.website})` : undefined,
+      ].filter(Boolean);
+      const linkParts = [
+        company.bregUrl ? `[Open in Brreg](${company.bregUrl})` : undefined,
+        company.organizationNumber ? `[Open in Alle.as](${getAlleAsUrl(company.organizationNumber)})` : undefined,
+        company.organizationNumber
+          ? `[Search in Proff](https://www.proff.no/bransjes%C3%B8k?q=${encodeURIComponent(company.name)})`
+          : undefined,
+      ].filter(Boolean);
+
       return `${tabsHeader}\n\n# ${company.name}
 
-${company.description ? `**Description:** ${company.description}\n\n` : ""}${company.organizationNumber ? `**Organization Number:** ${company.organizationNumber}\n\n` : ""}${company.address ? `**Address:** ${company.address}\n\n` : ""}${company.phone ? `**Phone:** ${company.phone}\n\n` : ""}${company.email ? `**Email:** ${company.email}\n\n` : ""}${company.website ? `**Website:** [${company.website}](${company.website})\n\n` : ""}${company.employees ? `**Employees:** ${company.employees}\n\n` : ""}${company.industry ? `**Industry:** ${company.industry}\n\n` : ""}${company.isVatRegistered !== undefined ? `**VAT Registered:** ${company.isVatRegistered ? "Yes" : "No"}\n\n` : ""}${company.isAudited !== undefined ? `**Audited:** ${company.isAudited ? "Yes" : "No"}\n\n` : ""}${company.lastAccountsFromDate ? `**Last Filing Date:** ${company.lastAccountsFromDate}\n\n` : ""}${company.bregUrl ? `[Open in Brreg](${company.bregUrl})` : ""}${company.organizationNumber ? ` | [Search in Proff](https://www.proff.no/bransjes%C3%B8k?q=${encodeURIComponent(company.name)})` : ""}`;
+${company.description ? `## Description\n\n${company.description}\n\n` : ""}${contactLines.length > 0 ? `## Contact Information\n\n${contactLines.join("\n\n")}\n\n` : ""}${linkParts.length > 0 ? linkParts.join(" | ") : ""}`;
     }
 
     if (activeTab === "financials") {
       return `${tabsHeader}\n\n# Financial Information
 
-${company.accountingYear ? `**Accounting Year:** ${company.accountingYear}\n\n` : ""}${company.revenue ? `**Revenue:** ${company.revenue}\n\n` : ""}${company.ebitda ? `**EBITDA:** ${company.ebitda}\n\n` : ""}${company.operatingResult ? `**Operating Result:** ${company.operatingResult}\n\n` : ""}${company.result ? `**Net Result:** ${company.result}\n\n` : ""}${company.totalAssets ? `**Total Assets:** ${company.totalAssets}\n\n` : ""}${company.equity ? `**Equity:** ${company.equity}\n\n` : ""}${company.totalDebt ? `**Total Debt:** ${company.totalDebt}\n\n` : ""}${company.depreciation ? `**Depreciation:** ${company.depreciation}\n\n` : ""}${company.isAudited !== undefined ? `**Audited:** ${company.isAudited ? "Yes" : "No"}\n\n` : ""}`;
+${company.accountingYear ? `**Accounting Year:** ${company.accountingYear}\n\n` : ""}${company.revenue ? `**Revenue:** ${company.revenue}\n\n` : ""}${company.ebitda ? `**EBITDA:** ${company.ebitda}\n\n` : ""}${company.operatingResult ? `**Operating Result:** ${company.operatingResult}\n\n` : ""}${company.result ? `**Net Result:** ${company.result}\n\n` : ""}${company.totalAssets ? `**Total Assets:** ${company.totalAssets}\n\n` : ""}${company.equity ? `**Equity:** ${company.equity}\n\n` : ""}${company.totalDebt ? `**Total Debt:** ${company.totalDebt}\n\n` : ""}${company.depreciation ? `**Depreciation:** ${company.depreciation}\n\n` : ""}${company.isAuditRequired !== undefined ? `**Audit Required:** ${formatYesNo(company.isAuditRequired)}\n\n` : ""}${company.isAudited !== undefined ? `**Audited Accounts:** ${formatYesNo(company.isAudited)}\n\n` : ""}`;
     }
 
     if (activeTab === "map") {
@@ -131,15 +155,9 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ?
     company.name,
     company.description,
     company.organizationNumber,
-    company.address,
     company.phone,
     company.email,
     company.website,
-    company.employees,
-    company.industry,
-    company.isVatRegistered,
-    company.isAudited,
-    company.lastAccountsFromDate,
     company.bregUrl,
     company.accountingYear,
     company.revenue,
@@ -150,6 +168,8 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ?
     company.equity,
     company.totalDebt,
     company.depreciation,
+    company.isAuditRequired,
+    company.isAudited,
     formattedAddress,
     mapImageUrl,
     tabsHeader,
@@ -157,6 +177,8 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ?
 
   const metadata = useMemo(() => {
     if (activeTab === "overview") {
+      const organizationForm = formatOrganizationForm(company);
+
       return (
         <Detail.Metadata>
           <Detail.Metadata.TagList title="Favorite">
@@ -165,6 +187,7 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ?
           {company.organizationNumber && (
             <Detail.Metadata.Label title="Organization Number" text={company.organizationNumber} />
           )}
+          {organizationForm && <Detail.Metadata.Label title="Organization Form" text={organizationForm} />}
           {formattedAddress && <Detail.Metadata.Label title="Address" text={formattedAddress} />}
           {company.municipality && (
             <Detail.Metadata.Label
@@ -179,13 +202,12 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ?
           {company.isVatRegistered !== undefined && (
             <Detail.Metadata.Label title="VAT Registered" text={company.isVatRegistered ? "Yes" : "No"} />
           )}
-          {company.isAudited !== undefined && (
-            <Detail.Metadata.Label title="Audited" text={company.isAudited ? "Yes" : "No"} />
+          {company.isAuditRequired !== undefined && (
+            <Detail.Metadata.Label title="Audit Required" text={formatYesNo(company.isAuditRequired)} />
           )}
-          {(company.phone || company.email || company.website) && <Detail.Metadata.Separator />}
-          {company.phone && <Detail.Metadata.Label title="Phone" text={company.phone} />}
-          {company.email && <Detail.Metadata.Label title="Email" text={company.email} />}
-          {company.website && <Detail.Metadata.Link title="Website" target={company.website} text={company.website} />}
+          {company.isAudited !== undefined && (
+            <Detail.Metadata.Label title="Audited Accounts" text={formatYesNo(company.isAudited)} />
+          )}
         </Detail.Metadata>
       );
     }
@@ -201,6 +223,7 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ?
           company.totalDebt ||
           company.ebitda ||
           company.depreciation ||
+          company.isAuditRequired !== undefined ||
           company.isAudited !== undefined,
       );
       return (
@@ -223,8 +246,11 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ?
               {company.equity && <Detail.Metadata.Label title="Equity" text={company.equity} />}
               {company.totalDebt && <Detail.Metadata.Label title="Total Debt" text={company.totalDebt} />}
               {company.depreciation && <Detail.Metadata.Label title="Depreciation" text={company.depreciation} />}
+              {company.isAuditRequired !== undefined && (
+                <Detail.Metadata.Label title="Audit Required" text={formatYesNo(company.isAuditRequired)} />
+              )}
               {company.isAudited !== undefined && (
-                <Detail.Metadata.Label title="Audited" text={company.isAudited ? "Yes" : "No"} />
+                <Detail.Metadata.Label title="Audited Accounts" text={formatYesNo(company.isAudited)} />
               )}
             </>
           )}

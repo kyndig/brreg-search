@@ -104,10 +104,7 @@ const CHANGELOG_HIGHLIGHTS_BY_VERSION: Readonly<Record<string, readonly string[]
   "1.0.1": [],
 };
 
-export const HAS_CHANGELOG_HIGHLIGHTS_FOR_CURRENT_VERSION = Object.hasOwn(
-  CHANGELOG_HIGHLIGHTS_BY_VERSION,
-  APP_VERSION,
-);
+export const HAS_CHANGELOG_HIGHLIGHTS_FOR_CURRENT_VERSION = Object.hasOwn(CHANGELOG_HIGHLIGHTS_BY_VERSION, APP_VERSION);
 
 const CHANGELOG_SHORTCUTS_HINT_MARKDOWN =
   "\n\n---\n`Enter` closes this changelog. `Shift+Enter` opens Keyboard Shortcuts.";

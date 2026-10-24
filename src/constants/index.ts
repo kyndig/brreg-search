@@ -5,6 +5,7 @@ const MODIFIER_SYMBOLS: Record<string, string> = {
   cmd: "⌘",
   shift: "⇧",
   ctrl: "⌃",
+  opt: "⌥",
   alt: "⌥",
 };
 
@@ -40,6 +41,7 @@ export const API_CONFIG = {
 export const KEYBOARD_SHORTCUTS = {
   COPY_ORG_NUMBER: { modifiers: ["cmd", "shift"], key: "c" },
   COPY_VAT_NUMBER: { modifiers: ["cmd", "shift"], key: "v" },
+  COPY_VAT_NUMBER_WITHOUT_PREFIX: { modifiers: ["cmd", "opt"], key: "v" },
   COPY_ADDRESS: { modifiers: ["cmd", "shift"], key: "b" },
   COPY_REVENUE: { modifiers: ["cmd", "shift"], key: "r" },
   COPY_NET_RESULT: { modifiers: ["cmd", "shift"], key: "n" },

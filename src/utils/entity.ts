@@ -123,11 +123,11 @@ export function getVatRegistrationStatus(entity: {
 }
 
 /**
- * Format Norwegian organization number as VAT number (NO {orgnr} MVA)
+ * Format Norwegian organization number as VAT number (NO{orgnr}MVA)
  */
 export function formatNorwegianVatNumber(orgNumber: string): string {
   const trimmed = orgNumber.trim().replace(/\s+/g, "");
-  return `NO ${trimmed} MVA`;
+  return `NO${trimmed}MVA`;
 }
 
 /**

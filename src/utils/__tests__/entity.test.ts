@@ -181,15 +181,15 @@ describe("getVatRegistrationStatus", () => {
 
 describe("formatNorwegianVatNumber", () => {
   it("formats clean org number", () => {
-    expect(formatNorwegianVatNumber("123456789")).toBe("NO 123456789 MVA");
+    expect(formatNorwegianVatNumber("123456789")).toBe("NO123456789MVA");
   });
 
   it("strips leading/trailing whitespace", () => {
-    expect(formatNorwegianVatNumber("  123456789  ")).toBe("NO 123456789 MVA");
+    expect(formatNorwegianVatNumber("  123456789  ")).toBe("NO123456789MVA");
   });
 
   it("strips internal whitespace", () => {
-    expect(formatNorwegianVatNumber("123 456 789")).toBe("NO 123456789 MVA");
+    expect(formatNorwegianVatNumber("123 456 789")).toBe("NO123456789MVA");
   });
 });
 
@@ -200,7 +200,7 @@ describe("copyVatNumberToClipboard", () => {
 
   it("copies VAT number when registered", async () => {
     await copyVatNumberToClipboard("123456789", "Test AS", true);
-    expect(Clipboard.copy).toHaveBeenCalledWith("NO 123456789 MVA");
+    expect(Clipboard.copy).toHaveBeenCalledWith("NO123456789MVA");
     expect(showToast).toHaveBeenCalledWith(
       expect.objectContaining({ style: Toast.Style.Success, title: "VAT Number Copied" }),
     );

@@ -122,12 +122,23 @@ export function getVatRegistrationStatus(entity: {
   return undefined;
 }
 
+/** `prefixed` is `NO{orgnr}MVA`. `unprefixed` is `{orgnr}MVA`. */
+export type NorwegianVatFormat = "prefixed" | "unprefixed";
+
 /**
- * Format Norwegian organization number as VAT number (NO {orgnr} MVA)
+ * Format a Norwegian organization number as a VAT number without spaces.
+ * Defaults to the country-prefixed form (`NO933031667MVA`).
  */
-export function formatNorwegianVatNumber(orgNumber: string): string {
-  const trimmed = orgNumber.trim().replace(/\s+/g, "");
-  return `NO ${trimmed} MVA`;
+export function formatNorwegianVatNumber(orgNumber: string, format: NorwegianVatFormat = "prefixed"): string {
+  const digits = orgNumber.trim().replace(/\s+/g, "");
+  const domestic = `${digits}MVA`;
+  return format === "prefixed" ? `NO${domestic}` : domestic;
+}
+
+interface CopyVatNumberOptions {
+  format?: NorwegianVatFormat;
+  successMessage?: (vatNumber: string) => string;
+  notVatRegisteredMessage?: (name: string) => string;
 }
 
 /**
@@ -138,26 +149,25 @@ export async function copyVatNumberToClipboard(
   orgNumber: string,
   name: string,
   vatStatus: boolean | undefined,
-  successMessage?: (vatNumber: string) => string,
-  notVatRegisteredMessage?: (name: string) => string,
+  options?: CopyVatNumberOptions,
 ): Promise<void> {
   if (vatStatus !== true) {
     const title = vatStatus === false ? "Not VAT Registered" : "VAT Status Unknown";
     const message =
       vatStatus === false
-        ? notVatRegisteredMessage
-          ? notVatRegisteredMessage(name)
+        ? options?.notVatRegisteredMessage
+          ? options.notVatRegisteredMessage(name)
           : `${name} is not registered for VAT`
         : `VAT registration status for ${name} is unknown`;
     await showToast({ style: Toast.Style.Failure, title, message });
     return;
   }
 
-  const vatNumber = formatNorwegianVatNumber(orgNumber);
+  const vatNumber = formatNorwegianVatNumber(orgNumber, options?.format);
   await Clipboard.copy(vatNumber);
   await showToast({
     style: Toast.Style.Success,
     title: "VAT Number Copied",
-    message: successMessage ? successMessage(vatNumber) : vatNumber,
+    message: options?.successMessage ? options.successMessage(vatNumber) : vatNumber,
   });
 }

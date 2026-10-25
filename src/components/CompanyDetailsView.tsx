@@ -1,10 +1,11 @@
 import { Detail, ActionPanel, Action, Icon } from "@raycast/api";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import ChangelogView from "./ChangelogView";
+import VatNumberCopyActions from "./VatNumberCopyActions";
 import { Company } from "../types";
 import { KEYBOARD_SHORTCUTS, USER_AGENT } from "../constants";
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { copyVatNumberToClipboard, getAlleAsUrl } from "../utils/entity";
+import { getAlleAsUrl } from "../utils/entity";
 import { getMapTileUrl } from "../utils/map";
 
 const TAB_ORDER = ["overview", "financials", "map"] as const;
@@ -48,11 +49,6 @@ export default function CompanyDetailsView({
   const [mapImageUrl, setMapImageUrl] = useState<string | undefined>(undefined);
   const geocodeCacheRef = useMemo(() => new Map<string, { lat: number; lon: number }>(), []);
   const lastGeocodeAtRef = useMemo(() => ({ value: 0 }), []);
-
-  const copyVatNumber = useCallback(
-    () => copyVatNumberToClipboard(company.organizationNumber, company.name, company.isVatRegistered),
-    [company.organizationNumber, company.name, company.isVatRegistered],
-  );
 
   // Format address manually since we don't have the Enhet format
   const formattedAddress = useMemo(() => {
@@ -301,11 +297,10 @@ ${formattedAddress ? `**Address:** ${formattedAddress}\n\n` : ""}${mapImageUrl ?
             />
           )}
           {company.organizationNumber && (
-            <Action
-              title="Copy Vat Number"
-              icon={Icon.Clipboard}
-              onAction={copyVatNumber}
-              shortcut={KEYBOARD_SHORTCUTS.COPY_VAT_NUMBER}
+            <VatNumberCopyActions
+              orgNumber={company.organizationNumber}
+              name={company.name}
+              vatStatus={company.isVatRegistered}
             />
           )}
           {formattedAddress && (

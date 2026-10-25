@@ -180,16 +180,22 @@ describe("getVatRegistrationStatus", () => {
 });
 
 describe("formatNorwegianVatNumber", () => {
-  it("formats clean org number", () => {
-    expect(formatNorwegianVatNumber("123456789")).toBe("NO 123456789 MVA");
+  it("formats a prefixed VAT number without spaces", () => {
+    expect(formatNorwegianVatNumber("123456789")).toBe("NO123456789MVA");
+  });
+
+  it("formats an unprefixed VAT number without spaces", () => {
+    expect(formatNorwegianVatNumber("123456789", "unprefixed")).toBe("123456789MVA");
   });
 
   it("strips leading/trailing whitespace", () => {
-    expect(formatNorwegianVatNumber("  123456789  ")).toBe("NO 123456789 MVA");
+    expect(formatNorwegianVatNumber("  123456789  ")).toBe("NO123456789MVA");
+    expect(formatNorwegianVatNumber("  123456789  ", "unprefixed")).toBe("123456789MVA");
   });
 
   it("strips internal whitespace", () => {
-    expect(formatNorwegianVatNumber("123 456 789")).toBe("NO 123456789 MVA");
+    expect(formatNorwegianVatNumber("123 456 789")).toBe("NO123456789MVA");
+    expect(formatNorwegianVatNumber("123 456 789", "unprefixed")).toBe("123456789MVA");
   });
 });
 
@@ -198,11 +204,27 @@ describe("copyVatNumberToClipboard", () => {
     vi.clearAllMocks();
   });
 
-  it("copies VAT number when registered", async () => {
+  it("copies the prefixed VAT number when registered", async () => {
     await copyVatNumberToClipboard("123456789", "Test AS", true);
-    expect(Clipboard.copy).toHaveBeenCalledWith("NO 123456789 MVA");
+    expect(Clipboard.copy).toHaveBeenCalledWith("NO123456789MVA");
     expect(showToast).toHaveBeenCalledWith(
-      expect.objectContaining({ style: Toast.Style.Success, title: "VAT Number Copied" }),
+      expect.objectContaining({
+        style: Toast.Style.Success,
+        title: "VAT Number Copied",
+        message: "NO123456789MVA",
+      }),
+    );
+  });
+
+  it("copies the unprefixed VAT number when requested", async () => {
+    await copyVatNumberToClipboard("123456789", "Test AS", true, { format: "unprefixed" });
+    expect(Clipboard.copy).toHaveBeenCalledWith("123456789MVA");
+    expect(showToast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        style: Toast.Style.Success,
+        title: "VAT Number Copied",
+        message: "123456789MVA",
+      }),
     );
   });
 
@@ -215,13 +237,9 @@ describe("copyVatNumberToClipboard", () => {
   });
 
   it("supports overriding not VAT registered message", async () => {
-    await copyVatNumberToClipboard(
-      "123456789",
-      "Test AS",
-      false,
-      undefined,
-      (name) => `Company ${name} is not registered for VAT`,
-    );
+    await copyVatNumberToClipboard("123456789", "Test AS", false, {
+      notVatRegisteredMessage: (name) => `Company ${name} is not registered for VAT`,
+    });
     expect(Clipboard.copy).not.toHaveBeenCalled();
     expect(showToast).toHaveBeenCalledWith(
       expect.objectContaining({

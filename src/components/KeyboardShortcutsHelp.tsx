@@ -64,7 +64,12 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
       {
         action: "Copy Vat Number",
         shortcutKey: "COPY_VAT_NUMBER",
-        description: "Copy Norwegian VAT number (NO {orgnr} MVA) to clipboard",
+        description: "Copy Norwegian VAT number (NO{orgnr}MVA) to clipboard",
+      },
+      {
+        action: "Copy Vat Number Without Prefix",
+        shortcutKey: "COPY_VAT_NUMBER_WITHOUT_PREFIX",
+        description: "Copy Norwegian VAT number ({orgnr}MVA) to clipboard",
       },
       { action: "Copy Address", shortcutKey: "COPY_ADDRESS", description: "Copy business address to clipboard" },
       { action: "Copy Revenue", shortcutKey: "COPY_REVENUE", description: "Copy revenue to clipboard" },

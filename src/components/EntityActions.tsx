@@ -1,10 +1,11 @@
 import { Action, Icon } from "@raycast/api";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import ChangelogView from "./ChangelogView";
+import VatNumberCopyActions from "./VatNumberCopyActions";
 import { Enhet } from "../types";
 import { KEYBOARD_SHORTCUTS } from "../constants";
 import React from "react";
-import { copyVatNumberToClipboard, getAlleAsUrl, getBregUrl, getVatRegistrationStatus } from "../utils/entity";
+import { getAlleAsUrl, getBregUrl, getVatRegistrationStatus } from "../utils/entity";
 
 /**
  * Props for the EntityActions component
@@ -26,9 +27,6 @@ function EntityActions({ entity, addressString, onViewDetails }: EntityActionsPr
   const bregUrl = getBregUrl(entity.organisasjonsnummer);
   const alleAsUrl = getAlleAsUrl(entity.organisasjonsnummer);
 
-  const copyVatNumber = () =>
-    copyVatNumberToClipboard(entity.organisasjonsnummer, entity.navn, getVatRegistrationStatus(entity));
-
   return (
     <>
       <Action title="View Details" icon={Icon.AppWindowSidebarLeft} onAction={() => onViewDetails(entity)} />
@@ -37,11 +35,10 @@ function EntityActions({ entity, addressString, onViewDetails }: EntityActionsPr
         title="Copy Organization Number"
         shortcut={KEYBOARD_SHORTCUTS.COPY_ORG_NUMBER}
       />
-      <Action
-        title="Copy Vat Number"
-        icon={Icon.Clipboard}
-        onAction={copyVatNumber}
-        shortcut={KEYBOARD_SHORTCUTS.COPY_VAT_NUMBER}
+      <VatNumberCopyActions
+        orgNumber={entity.organisasjonsnummer}
+        name={entity.navn}
+        vatStatus={getVatRegistrationStatus(entity)}
       />
       {addressString && (
         <Action.CopyToClipboard
